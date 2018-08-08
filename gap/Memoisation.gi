@@ -40,5 +40,4 @@ end);
 InstallMethod(MEMOISATION_Key,
 "for a group with generators",
 [IsGroup and HasGeneratorsOfGroup],
-G -> String(GeneratorsOfGroup(G)));
-# Note: GeneratorsSmallest recognises equality better
+G -> String(GeneratorsSmallest(G)));
