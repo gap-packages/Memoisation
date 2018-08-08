@@ -19,9 +19,18 @@ DeclareGlobalFunction("MEMOISATION_Hash");
 BindGlobal("MEMOISATION_StoreDir", "./memo/");
 
 #! @Description
-#!   Find the return value of the given function with the given arguments.
-#!   First hash the arguments and look them up in the appropriate memoisation
-#!   tables.  If no entry exists, compute the value, add it to the table, and
-#!   return it.
-#! @Arguments func_name, arg
+#!   Filename extension for memoisation tables
+BindGlobal("MEMOISATION_FileExt", "mem");
+
+#! @Description
+#!   Clear the memoisation tables of the given functions, or clear all
+#!   memoisation tables if one is not given
+#! @Arguments funcs
+DeclareGlobalFunction("MEMOISATION_ClearStore");
+
+#! @Description
+#!   Return a new function that acts the same as func, but using memoisation.
+#!   The result will be retrieved from the store if possible, or computed and
+#!   added to the store otherwise.
+#! @Arguments func
 DeclareGlobalFunction("RunWithMemoisation");
