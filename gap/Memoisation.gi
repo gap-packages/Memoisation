@@ -39,6 +39,11 @@ end);
 #
 
 InstallMethod(MEMOISATION_Key,
+"for a list",
+[IsList],
+L -> JoinStringsWithSeparator(List(L, MEMOISATION_Key), ";"));
+
+InstallMethod(MEMOISATION_Key,
 "for a group with generators",
 [IsGroup and HasGeneratorsOfGroup],
 G -> String(GeneratorsSmallest(G)));
