@@ -18,6 +18,7 @@ function(func, arg)
   filename := Concatenation(MEMOISATION_StoreDir, NameFunction(func), ".mem");
   hash := MEMOISATION_Hash(arg);
   out_stream := OutputTextFile(filename, true);
+  SetPrintFormattingStatus(out_stream, false);
   in_stream := InputTextFile(filename);
   line := ReadLine(in_stream);
   while line <> fail do
@@ -28,7 +29,7 @@ function(func, arg)
     line := ReadLine(in_stream);
   od;
   result := func(arg);
-  WriteLine(out_stream, Concatenation(hash, ";", String(result)));
+  PrintTo(out_stream, hash, ";", result, "\n");
   CloseStream(out_stream);
   return result;
 end);
