@@ -62,12 +62,19 @@ end);
 # Key methods for various objects
 #
 
-InstallMethod(MEMOISATION_Key,
-"for a list",
-[IsList],
-L -> JoinStringsWithSeparator(List(L, MEMOISATION_Key), ";"));
+# Simply use MathInTheMiddle for all objects
 
 InstallMethod(MEMOISATION_Key,
-"for a group with generators",
-[IsGroup and HasGeneratorsOfGroup],
-G -> Concatenation("Group(", String(GeneratorsSmallest(G)), ")"));
+"for an object",
+[IsObject],
+obj -> MitM_OMRecToXML(MitM_GAPToOMRec(obj)));
+
+# InstallMethod(MEMOISATION_Key,
+# "for a list",
+# [IsList],
+# L -> JoinStringsWithSeparator(List(L, MEMOISATION_Key), ";"));
+
+# InstallMethod(MEMOISATION_Key,
+# "for a group with generators",
+# [IsGroup and HasGeneratorsOfGroup],
+# G -> Concatenation("Group(", String(GeneratorsSmallest(G)), ")"));
