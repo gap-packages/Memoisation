@@ -33,4 +33,4 @@ DeclareGlobalFunction("MEMOISATION_ClearStore");
 #!   The result will be retrieved from the store if possible, or computed and
 #!   added to the store otherwise.
 #! @Arguments func
-DeclareGlobalFunction("RunWithMemoisation");
+DeclareGlobalFunction("MemoisedFunction");

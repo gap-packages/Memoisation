@@ -4,7 +4,7 @@
 # Implementations
 #
 
-InstallGlobalFunction(RunWithMemoisation,
+InstallGlobalFunction(MemoisedFunction,
 function(func)
   return function(args...)
     local filename, hash, out_stream, in_stream, line, result;
