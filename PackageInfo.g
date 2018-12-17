@@ -21,7 +21,12 @@ Persons := [
     LastName := "Torpey",
     WWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~mct25/",
     Email := "mct25@st-andrews.ac.uk",
-    PostalAddress := "TODO",
+    PostalAddress := Concatenation(
+               "School of Computer Science\n",
+               "University of St Andrews\n",
+               "Jack Cole Building, North Haugh\n",
+               "St Andrews, Fife, KY16 9SX\n",
+               "United Kingdom" ),
     Place := "St Andrews",
     Institution := "University of St Andrews",
   ),
