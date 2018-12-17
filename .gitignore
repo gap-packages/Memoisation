@@ -17,6 +17,7 @@
 /doc/*.six
 /doc/*.tex
 /doc/*.toc
+/doc/*.xml
 /doc/manual.pdf
 
 .deps/
