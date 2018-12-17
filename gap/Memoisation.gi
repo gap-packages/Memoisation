@@ -4,13 +4,6 @@
 # Implementations
 #
 
-InstallGlobalFunction(MEMOISATION_Hash,
-function(obj)
-  local ints;
-  ints := SHA256String(MEMOISATION_Key(obj));
-  return Concatenation(List(ints, CRYPTING_HexStringIntPad8));
-end);
-
 InstallGlobalFunction(RunWithMemoisation,
 function(func)
   return function(args...)
