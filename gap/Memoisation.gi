@@ -59,10 +59,25 @@ function(funcs...)
 end);
 
 #
-# Key methods for various objects
+# 2. Helper functions
 #
 
-# Simply use MathInTheMiddle for all objects
+InstallGlobalFunction(MEMOISATION_Hash,
+function(obj)
+  local key, ints, sum, i, str;
+  key := MEMOISATION_Key(obj);  # Get the key
+  ints := SHA256String(key);  # Get the SHA-256 checksum in 32-bit chunks
+  sum := 0;  # Bring all 256 bits together into a single integer
+  for i in [1..Length(ints)] do
+    sum := sum + ints[i] * 2 ^ (32 * (i-1));
+  od;
+  str := MEMOISATION_Digits(sum, 64, 43);  # Make into a padded base-64 string
+  return str;
+end);
+
+#
+# 3. Key methods for various objects
+#
 
 InstallMethod(MEMOISATION_Key,
 "for a group with generators",
