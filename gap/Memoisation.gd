@@ -20,7 +20,7 @@ BindGlobal("MEMOISATION_StoreDir", "./memo/");
 
 #! @Description
 #!   Filename extension for memoisation tables
-BindGlobal("MEMOISATION_FileExt", "mem");
+BindGlobal("MEMOISATION_FileExt", "out");
 
 #! @Description
 #!   Clear the memoisation tables of the given functions, or clear all
