@@ -5,3 +5,4 @@
 #
 
 ReadPackage( "Memoisation", "gap/Memoisation.gd");
+ReadPackage( "Memoisation", "gap/base64.gd");
