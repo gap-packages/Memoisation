@@ -7,35 +7,47 @@
 InstallGlobalFunction(MemoisedFunction,
 function(func)
   return function(args...)
-    local filename, hash, out_stream, in_stream, line, result;
-    CreateDir(MEMOISATION_StoreDir);
-    filename := Concatenation(MEMOISATION_StoreDir, NameFunction(func),
-                              ".", MEMOISATION_FileExt);
-    hash := MEMOISATION_Hash(args);
-    Print(hash, "\n");
-    out_stream := OutputTextFile(filename, true);
-    SetPrintFormattingStatus(out_stream, false);
-    in_stream := InputTextFile(filename);
-    line := ReadLine(in_stream);
-    while line <> fail do
-      line := SplitString(line, ";\n");
-      if line[1] = hash then
-        result := EvalString(line[2]);
-        Print("setting? ", Size(args), "\n");
-        if Size(args) = 1 and (IsAttribute(func) or IsProperty(func)) then
-          Print("setting!\n");
-          Setter(func)(args[1], result);
-        fi;
-        return result;
+    local basedir, funcdir, dir, key, hash, filename, str, result;
+
+    # Directory
+    basedir := MEMOISATION_StoreDir;
+    CreateDir(basedir);
+    funcdir := NameFunction(func);
+    dir := Filename(Directory(basedir), funcdir);
+    CreateDir(dir);
+    Print("Using directory ", dir, "\n");
+
+    # Compute memoisation stuff
+    key := MEMOISATION_Key(args);
+    Print("Got key ", key, "\n");
+    hash := MEMOISATION_Hash(key);
+    Print("Hashed to ", hash, "\n");
+    filename := Filename(Directory(dir), MEMOISATION_HashToFilename(hash));
+
+    if IsReadableFile(filename) then
+      # Retrieve cached answer
+      Print("Getting cached answer from ", filename, "...\n");
+      str := StringFile(filename);
+      Print("Got string ", str, "\n");
+      result := IO_Unpickle(str);
+      if Size(args) = 1 and (IsAttribute(func) or IsProperty(func)) then
+        Print("Setting attribute/property\n");
+        Setter(func)(args[1], result);
       fi;
-      line := ReadLine(in_stream);
-    od;
-    Print("computing fresh...\n");
-    result := CallFuncList(func, args);
-    PrintTo(out_stream, hash, ";", result, "\n");
-    CloseStream(out_stream);
+    else
+      # Compute and store
+      result := CallFuncList(func, args);
+      str := IO_Pickle(result);
+      FileString(filename, str);
+    fi;
+
     return result;
   end;
+end);
+
+InstallGlobalFunction(MEMOISATION_HashToFilename,
+function(hash)
+  return Concatenation(hash, ".out");
 end);
 
 InstallGlobalFunction(MEMOISATION_ClearStore,
@@ -45,7 +57,7 @@ function(funcs...)
     RemoveDirectoryRecursively(MEMOISATION_StoreDir);
   fi;
   for func in funcs do
-    RemoveFile(Concatenation(MEMOISATION_StoreDir, 
+    RemoveFile(Concatenation(MEMOISATION_StoreDir,
                              NameFunction(func),
                              MEMOISATION_FileExt));
   od;
@@ -55,11 +67,16 @@ end);
 # 2. Helper functions
 #
 
+InstallGlobalFunction(MEMOISATION_Key,
+function(args_list)
+  return args_list;
+end);
+
 InstallGlobalFunction(MEMOISATION_Hash,
-function(obj)
-  local key, ints, sum, i, str;
-  key := MEMOISATION_Key(obj);  # Get the key
-  ints := SHA256String(key);  # Get the SHA-256 checksum in 32-bit chunks
+function(key)
+  local str, ints, sum, i;
+  str := IO_Pickle(key);  # Pickle the key to a string
+  ints := SHA256String(str);  # Get the SHA-256 checksum in 32-bit chunks
   sum := 0;  # Bring all 256 bits together into a single integer
   for i in [1..Length(ints)] do
     sum := sum + ints[i] * 2 ^ (32 * (i-1));
@@ -67,17 +84,3 @@ function(obj)
   str := MEMOISATION_Digits(sum, 64, 43);  # Make into a padded base-64 string
   return str;
 end);
-
-#
-# 3. Key methods for various objects
-#
-
-InstallMethod(MEMOISATION_Key,
-"for a group with generators",
-[IsGroup and HasGeneratorsOfGroup],
-G -> Concatenation("Group(", String(GeneratorsSmallest(G)), ")"));
-
-InstallMethod(MEMOISATION_Key,
-"for an object",
-[IsObject],
-IO_Pickle);

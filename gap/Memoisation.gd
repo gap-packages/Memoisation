@@ -7,12 +7,14 @@
 #! @Description
 #!   Return a string which identifies the object
 #! @Arguments obj
-DeclareAttribute("MEMOISATION_Key", IsObject);
+DeclareGlobalFunction("MEMOISATION_Key");
 
 #! @Description
 #!   Return an SHA-256 hash string for the object, based on its MEMOISATION_Key
 #! @Arguments obj
 DeclareGlobalFunction("MEMOISATION_Hash");
+
+DeclareGlobalFunction("MEMOISATION_HashToFilename");
 
 #! @Description
 #!   Default directory to store memoisation tables
