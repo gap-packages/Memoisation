@@ -12,6 +12,7 @@ PackageName := "Memoisation",
 Subtitle := "Shared persistent memoisation library for GAP and other systems",
 Version := "0.1",
 Date := "06/08/2018", # dd/mm/yyyy format
+License := "BSD-3-Clause",
 
 Persons := [
   rec(
