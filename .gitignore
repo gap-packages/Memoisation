@@ -57,3 +57,5 @@ src/*.lo
 
 /tmp/
 /gh-pages/
+
+/memo/
