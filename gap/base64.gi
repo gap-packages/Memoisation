@@ -1,7 +1,7 @@
-MEMOISATION_Base64Digits :=
+MEMO_Base64Digits :=
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
 
-InstallGlobalFunction(MEMOISATION_Digits,
+InstallGlobalFunction(MEMO_Digits,
 function(n, base, args...)
   local minlen, len, digits, str;
   # Adapted from the DigitsNumber function in GAPDoc-1.6.1
@@ -12,7 +12,7 @@ function(n, base, args...)
   else
     return fail;
   fi;
-  digits := MEMOISATION_Base64Digits;
+  digits := MEMO_Base64Digits;
   str := "";
   while n <> 0 do
     Add(str, digits[(n mod base) + 1]);

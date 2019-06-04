@@ -1,1 +1,1 @@
-DeclareGlobalFunction("MEMOISATION_Digits");
+DeclareGlobalFunction("MEMO_Digits");

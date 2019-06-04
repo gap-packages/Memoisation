@@ -7,31 +7,31 @@
 #! @Description
 #!   Return a string which identifies the arguments of this function call
 #! @Arguments obj
-DeclareGlobalFunction("MEMOISATION_Key");
+DeclareGlobalFunction("MEMO_Key");
 
 #! @Description
 #!   Return an SHA-256 hash string for the key
 #! @Arguments obj
-DeclareGlobalFunction("MEMOISATION_Hash");
+DeclareGlobalFunction("MEMO_Hash");
 
 #! @Description
 #!   Return the filename to use for a call, based on its hash
 #! @Arguments obj
-DeclareGlobalFunction("MEMOISATION_HashToFilename");
+DeclareGlobalFunction("MEMO_HashToFilename");
 
 #! @Description
 #!   Default directory to store memoisation tables
-BindGlobal("MEMOISATION_StoreDir", "./memo/");
+BindGlobal("MEMO_StoreDir", "./memo/");
 
 #! @Description
 #!   Filename extension for memoisation tables
-BindGlobal("MEMOISATION_FileExt", "out");
+BindGlobal("MEMO_FileExt", "out");
 
 #! @Description
 #!   Clear the memoisation tables of the given functions, or clear all
 #!   memoisation tables if one is not given
 #! @Arguments funcs
-DeclareGlobalFunction("MEMOISATION_ClearStore");
+DeclareGlobalFunction("MEMO_ClearStore");
 
 #! @Description
 #!   Return a new function that acts the same as func, but using memoisation.

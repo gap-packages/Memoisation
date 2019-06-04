@@ -10,7 +10,7 @@ function(func)
     local basedir, funcdir, dir, key, hash, filename, str, result;
 
     # Directory
-    basedir := MEMOISATION_StoreDir;
+    basedir := MEMO_StoreDir;
     CreateDir(basedir);
     funcdir := NameFunction(func);
     if funcdir = "unknown" then
@@ -22,11 +22,11 @@ function(func)
     Print("Using directory ", dir, "\n");
 
     # Compute memoisation stuff
-    key := MEMOISATION_Key(args);
+    key := MEMO_Key(args);
     Print("Got key ", key, "\n");
-    hash := MEMOISATION_Hash(key);
+    hash := MEMO_Hash(key);
     Print("Hashed to ", hash, "\n");
-    filename := Filename(Directory(dir), MEMOISATION_HashToFilename(hash));
+    filename := Filename(Directory(dir), MEMO_HashToFilename(hash));
 
     if IsReadableFile(filename) then
       # Retrieve cached answer
@@ -49,21 +49,21 @@ function(func)
   end;
 end);
 
-InstallGlobalFunction(MEMOISATION_HashToFilename,
+InstallGlobalFunction(MEMO_HashToFilename,
 function(hash)
   return Concatenation(hash, ".out");
 end);
 
-InstallGlobalFunction(MEMOISATION_ClearStore,
+InstallGlobalFunction(MEMO_ClearStore,
 function(funcs...)
   local func;
   if IsEmpty(funcs) then
-    RemoveDirectoryRecursively(MEMOISATION_StoreDir);
+    RemoveDirectoryRecursively(MEMO_StoreDir);
   fi;
   for func in funcs do
-    RemoveFile(Concatenation(MEMOISATION_StoreDir,
+    RemoveFile(Concatenation(MEMO_StoreDir,
                              NameFunction(func),
-                             MEMOISATION_FileExt));
+                             MEMO_FileExt));
   od;
 end);
 
@@ -71,12 +71,12 @@ end);
 # 2. Helper functions
 #
 
-InstallGlobalFunction(MEMOISATION_Key,
+InstallGlobalFunction(MEMO_Key,
 function(args_list)
   return args_list;
 end);
 
-InstallGlobalFunction(MEMOISATION_Hash,
+InstallGlobalFunction(MEMO_Hash,
 function(key)
   local str, ints, sum, i;
   str := IO_Pickle(key);  # Pickle the key to a string
@@ -85,6 +85,6 @@ function(key)
   for i in [1..Length(ints)] do
     sum := sum + ints[i] * 2 ^ (32 * (i-1));
   od;
-  str := MEMOISATION_Digits(sum, 64, 43);  # Make into a padded base-64 string
+  str := MEMO_Digits(sum, 64, 43);  # Make into a padded base-64 string
   return str;
 end);
