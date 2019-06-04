@@ -13,6 +13,10 @@ function(func)
     basedir := MEMOISATION_StoreDir;
     CreateDir(basedir);
     funcdir := NameFunction(func);
+    if funcdir = "unknown" then
+      ErrorNoReturn("Memoisation: memoised function <func> has no name,\n",
+                    "and no funcName was specified");
+    fi;
     dir := Filename(Directory(basedir), funcdir);
     CreateDir(dir);
     Print("Using directory ", dir, "\n");
@@ -28,7 +32,7 @@ function(func)
       # Retrieve cached answer
       Print("Getting cached answer from ", filename, "...\n");
       str := StringFile(filename);
-      Print("Got string ", str, "\n");
+      Print("Got string to unpickle...\n");#, PrintString(str), "\n");
       result := IO_Unpickle(str);
       if Size(args) = 1 and (IsAttribute(func) or IsProperty(func)) then
         Print("Setting attribute/property\n");

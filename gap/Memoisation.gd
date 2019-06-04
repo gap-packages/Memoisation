@@ -5,15 +5,18 @@
 #
 
 #! @Description
-#!   Return a string which identifies the object
+#!   Return a string which identifies the arguments of this function call
 #! @Arguments obj
 DeclareGlobalFunction("MEMOISATION_Key");
 
 #! @Description
-#!   Return an SHA-256 hash string for the object, based on its MEMOISATION_Key
+#!   Return an SHA-256 hash string for the key
 #! @Arguments obj
 DeclareGlobalFunction("MEMOISATION_Hash");
 
+#! @Description
+#!   Return the filename to use for a call, based on its hash
+#! @Arguments obj
 DeclareGlobalFunction("MEMOISATION_HashToFilename");
 
 #! @Description
