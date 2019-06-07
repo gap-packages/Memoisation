@@ -6,48 +6,96 @@
 
 InstallGlobalFunction(MemoisedFunction,
 function(func)
-  return function(args...)
-    local basedir, funcdir, dir, key, hash, filename, str, result;
+  local basedir, funcName, dir, memo, type;
+
+  # Defaults
+  basedir := MEMO_StoreDir;
+  funcName := NameFunction(func);
+  dir := Filename(Directory(basedir), funcName);
+
+  # Checks
+  if funcName = "unknown" then
+    ErrorNoReturn("Memoisation: memoised function <func> has no name,\n",
+                  "and no funcName was specified");
+  fi;
+
+  # Make the record
+  memo := rec(func := func,
+              basedir := basedir,
+              funcName := funcName,
+              dir := dir);
+
+  # Objectify
+  type := NewType(FunctionsFamily, IsMemoisedFunction);
+  memo := Objectify(type, memo);
+
+  return memo;
+end);
+
+InstallMethod(CallFuncList,
+"for a memoised function",
+[IsMemoisedFunction, IsList],
+function(memo, args)
+  local key, hash, filename, str, result;
 
     # Directory
-    basedir := MEMO_StoreDir;
-    CreateDir(basedir);
-    funcdir := NameFunction(func);
-    if funcdir = "unknown" then
-      ErrorNoReturn("Memoisation: memoised function <func> has no name,\n",
-                    "and no funcName was specified");
-    fi;
-    dir := Filename(Directory(basedir), funcdir);
-    CreateDir(dir);
-    Print("Using directory ", dir, "\n");
+    CreateDir(memo!.basedir);
+    CreateDir(memo!.dir);
+    Print("Using directory ", memo!.dir, "\n");
 
     # Compute memoisation stuff
     key := MEMO_Key(args);
     Print("Got key ", key, "\n");
     hash := MEMO_Hash(key);
     Print("Hashed to ", hash, "\n");
-    filename := Filename(Directory(dir), MEMO_HashToFilename(hash));
+    filename := Filename(Directory(memo!.dir), MEMO_HashToFilename(hash));
 
     if IsReadableFile(filename) then
       # Retrieve cached answer
       Print("Getting cached answer from ", filename, "...\n");
       str := StringFile(filename);
-      Print("Got string to unpickle...\n");#, PrintString(str), "\n");
+      Print("Got string of length ", Length(str), " to unpickle\n");
       result := IO_Unpickle(str);
-      if Size(args) = 1 and (IsAttribute(func) or IsProperty(func)) then
+      if Size(args) = 1 and
+         (IsAttribute(memo!.func) or IsProperty(memo!.func)) then
         Print("Setting attribute/property\n");
-        Setter(func)(args[1], result);
+        Setter(memo!.func)(args[1], result);
       fi;
     else
       # Compute and store
-      result := CallFuncList(func, args);
+      result := CallFuncList(memo!.func, args);
       str := IO_Pickle(result);
       FileString(filename, str);
     fi;
 
     return result;
-  end;
 end);
+
+InstallMethod(ViewObj,
+"for a memoised function",
+[IsMemoisedFunction],
+function(memo)
+  Print("<memoised ");
+  ViewObj(memo!.func);
+  Print(">");
+end);
+
+InstallMethod(PrintObj,
+"for a memoised function",
+[IsMemoisedFunction],
+function(memo)
+  Print("MemoisedFunction( ");
+  PrintObj(memo!.func);
+  Print(" )");
+end);
+
+for delegated_function in [NamesLocalVariablesFunction,
+                           NumberArgumentsFunction] do
+  InstallMethod(delegated_function,
+                "for a memoised function",
+                [IsMemoisedFunction],
+                memo -> delegated_function(memo!.func));
+od;
 
 InstallGlobalFunction(MEMO_HashToFilename,
 function(hash)

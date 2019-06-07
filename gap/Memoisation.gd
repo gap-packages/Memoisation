@@ -39,3 +39,7 @@ DeclareGlobalFunction("MEMO_ClearStore");
 #!   added to the store otherwise.
 #! @Arguments func
 DeclareGlobalFunction("MemoisedFunction");
+
+DeclareCategory("IsMemoisedFunction", IsFunction);
+
+#DeclareOperation("CallFuncList", [IsMemoisedFunction, IsList]);
