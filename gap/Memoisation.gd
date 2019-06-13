@@ -33,6 +33,8 @@ BindGlobal("MEMO_FileExt", "out");
 #! @Arguments funcs
 DeclareGlobalFunction("MEMO_ClearStore");
 
+DeclareGlobalFunction("MEMO_CreateDirRecursively");
+
 #! @Description
 #!   Return a new function that acts the same as func, but using memoisation.
 #!   The result will be retrieved from the store if possible, or computed and

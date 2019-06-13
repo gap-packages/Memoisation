@@ -5,25 +5,54 @@
 #
 
 InstallGlobalFunction(MemoisedFunction,
-function(func)
-  local basedir, funcName, dir, memo, type;
+function(func, args...)
+  local opts, funcname, key, storekey, pickle, unpickle, hash, unhash, metadata,
+        rnam, basedir, dir, memo, cache, type;
 
-  # Defaults
-  basedir := MEMO_StoreDir;
-  funcName := NameFunction(func);
-  dir := Filename(Directory(basedir), funcName);
+  # Default options
+  opts := rec(cache := "file://memo/",
+              funcname := NameFunction(func),
+              key := IdFunc,  # use args as key
+              storekey := false,
+              pickle := IO_Pickle,
+              unpickle := IO_Unpickle,
+              hash := MEMO_Hash,
+              unhash := fail,
+              metadata := fail);
 
-  # Checks
-  if funcName = "unknown" then
-    ErrorNoReturn("Memoisation: memoised function <func> has no name,\n",
-                  "and no funcName was specified");
+  # Process optional argument
+  if Length(args) = 1 then
+    if not IsRecord(opts) then
+      ErrorNoReturn("Memoisation: MemoisedFunction: ",
+                    "2nd argument <opts> should be a record");
+    fi;
+    # Import user options
+    for rnam in RecNames(args[1]) do
+      opts.(rnam) := args[1].(rnam);
+    od;
+  elif Length(args) > 1 then
+    ErrorNoReturn("Memoisation: MemoisedFunction takes 1 or 2 arguments, not ",
+                  Length(args) + 1);
   fi;
 
+  # Checks
+  if opts.funcname = "unknown" then
+    ErrorNoReturn("Memoisation: memoised function <func> has no name,\n",
+                  "and no funcname was specified");
+  fi;
+
+  # Directory to use for results
+  basedir := opts.cache{[Length("file://") + 1 .. Length(opts.cache)]};  # TODO
+  dir := Filename(Directory(basedir), opts.funcname);
+
   # Make the record
-  memo := rec(func := func,
-              basedir := basedir,
-              funcName := funcName,
-              dir := dir);
+  memo := rec(
+               func := func,
+               dir := dir,
+               cache := opts.cache,
+               funcname := opts.funcname,
+               key := opts.key,
+             );
 
   # Objectify
   type := NewType(FunctionsFamily, IsMemoisedFunction);
@@ -39,12 +68,11 @@ function(memo, args)
   local key, hash, filename, str, result;
 
     # Directory
-    CreateDir(memo!.basedir);
-    CreateDir(memo!.dir);
+    MEMO_CreateDirRecursively(memo!.dir);
     Print("Using directory ", memo!.dir, "\n");
 
     # Compute memoisation stuff
-    key := MEMO_Key(args);
+    key := memo!.key(args);
     Print("Got key ", key, "\n");
     hash := MEMO_Hash(key);
     Print("Hashed to ", hash, "\n");
@@ -119,9 +147,23 @@ end);
 # 2. Helper functions
 #
 
-InstallGlobalFunction(MEMO_Key,
-function(args_list)
-  return args_list;
+InstallGlobalFunction(MEMO_CreateDirRecursively,
+function(dir)
+  # Borrowed from PackageManager
+  local path, newdir, i, res;
+  path := SplitString(dir, "/");
+  newdir := "";
+  for i in [1 .. Length(path)] do
+    Append(newdir, path[i]);
+    Append(newdir, "/");
+    if not IsDirectoryPath(newdir) then
+      res := CreateDir(newdir);
+      if res <> true then
+        return fail;
+      fi;
+    fi;
+  od;
+  return true;
 end);
 
 InstallGlobalFunction(MEMO_Hash,
