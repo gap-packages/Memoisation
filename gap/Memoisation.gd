@@ -15,9 +15,9 @@ DeclareGlobalFunction("MEMO_Key");
 DeclareGlobalFunction("MEMO_Hash");
 
 #! @Description
-#!   Return the filename to use for a call, based on its hash
-#! @Arguments obj
-DeclareGlobalFunction("MEMO_HashToFilename");
+#!   Return the filename to use for a call, based on its key
+#! @Arguments memo, key, ext
+DeclareGlobalFunction("MEMO_KeyToFilename");
 
 #! @Description
 #!   Default directory to store memoisation tables
@@ -45,3 +45,5 @@ DeclareGlobalFunction("MemoisedFunction");
 DeclareCategory("IsMemoisedFunction", IsFunction);
 
 #DeclareOperation("CallFuncList", [IsMemoisedFunction, IsList]);
+
+BindGlobal("MEMO_OUT", ".out");

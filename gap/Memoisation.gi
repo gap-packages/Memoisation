@@ -52,6 +52,7 @@ function(func, args...)
                cache := opts.cache,
                funcname := opts.funcname,
                key := opts.key,
+               hash := opts.hash,
              );
 
   # Objectify
@@ -74,9 +75,8 @@ function(memo, args)
     # Compute memoisation stuff
     key := memo!.key(args);
     Print("Got key ", key, "\n");
-    hash := MEMO_Hash(key);
-    Print("Hashed to ", hash, "\n");
-    filename := Filename(Directory(memo!.dir), MEMO_HashToFilename(hash));
+    filename := MEMO_KeyToFilename(memo, key, MEMO_OUT);
+    Print("Using filename ", filename, "\n");
 
     if IsReadableFile(filename) then
       # Retrieve cached answer
@@ -125,9 +125,12 @@ for delegated_function in [NamesLocalVariablesFunction,
                 memo -> delegated_function(memo!.func));
 od;
 
-InstallGlobalFunction(MEMO_HashToFilename,
-function(hash)
-  return Concatenation(hash, ".out");
+InstallGlobalFunction(MEMO_KeyToFilename,
+function(memo, key, ext)
+  local h, fname;
+  h := memo!.hash(key);
+  fname := Concatenation(h, ext);
+  return Filename(Directory(memo!.dir), fname);
 end);
 
 InstallGlobalFunction(MEMO_ClearStore,
