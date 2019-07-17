@@ -12,13 +12,13 @@ function(func, args...)
   # Default options
   opts := rec(cache := "file://memo/",
               funcname := NameFunction(func),
-              key := IdFunc,  # use args as key
-              storekey := false,
+              key := IdFunc,  # default: use args as key
+              storekey := false,  # TODO
               pickle := IO_Pickle,
               unpickle := IO_Unpickle,
               hash := MEMO_Hash,
-              unhash := fail,
-              metadata := fail);
+              unhash := fail,  # TODO
+              metadata := fail);  # TODO
 
   # Process optional argument
   if Length(args) = 1 then
@@ -52,6 +52,8 @@ function(func, args...)
                cache := opts.cache,
                funcname := opts.funcname,
                key := opts.key,
+               pickle := opts.pickle,
+               unpickle := opts.unpickle,
                hash := opts.hash,
              );
 
@@ -83,7 +85,7 @@ function(memo, args)
       Print("Getting cached answer from ", filename, "...\n");
       str := StringFile(filename);
       Print("Got string of length ", Length(str), " to unpickle\n");
-      result := IO_Unpickle(str);
+      result := memo!.unpickle(str);
       if Size(args) = 1 and
          (IsAttribute(memo!.func) or IsProperty(memo!.func)) then
         Print("Setting attribute/property\n");
@@ -92,7 +94,7 @@ function(memo, args)
     else
       # Compute and store
       result := CallFuncList(memo!.func, args);
-      str := IO_Pickle(result);
+      str := memo!.pickle(result);
       FileString(filename, str);
     fi;
 
