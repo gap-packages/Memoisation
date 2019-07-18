@@ -68,7 +68,7 @@ InstallMethod(CallFuncList,
 "for a memoised function",
 [IsMemoisedFunction, IsList],
 function(memo, args)
-  local key, hash, filename, str, result;
+  local key, filename, key_filename, key_str, storedkey, str, result;
 
     # Directory
     MEMO_CreateDirRecursively(memo!.dir);
@@ -79,10 +79,19 @@ function(memo, args)
     Print("Got key ", key, "\n");
     filename := MEMO_KeyToFilename(memo, key, MEMO_OUT);
     Print("Using filename ", filename, "\n");
+    key_filename := MEMO_KeyToFilename(memo, key, MEMO_KEY);
 
     if IsReadableFile(filename) then
       # Retrieve cached answer
       Print("Getting cached answer from ", filename, "...\n");
+      if memo!.storekey then
+        Print("Checking key in ", key_filename, "...\n");
+        key_str := StringFile(key_filename);
+        storedkey := memo!.unpickle(key_str);
+        if key <> storedkey then
+          Error("Hash collision: stored key does not match");
+        fi;
+      fi;
       str := StringFile(filename);
       Print("Got string of length ", Length(str), " to unpickle\n");
       result := memo!.unpickle(str);
@@ -96,6 +105,12 @@ function(memo, args)
       result := CallFuncList(memo!.func, args);
       str := memo!.pickle(result);
       FileString(filename, str);
+      # Store key
+      if memo!.storekey then
+        key_str := memo!.pickle(key);
+        Print("Storing key at ", key_str, "...\n");
+        FileString(key_filename, key_str);
+      fi;
     fi;
 
     return result;
@@ -114,9 +129,9 @@ InstallMethod(PrintObj,
 "for a memoised function",
 [IsMemoisedFunction],
 function(memo)
-  Print("MemoisedFunction( ");
+  Print("MemoisedFunction(\n");
   PrintObj(memo!.func);
-  Print(" )");
+  Print(",\nrec(funcname := \"", memo!.funcname, "\") )");
 end);
 
 for delegated_function in [NamesLocalVariablesFunction,

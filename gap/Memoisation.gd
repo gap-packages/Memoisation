@@ -47,3 +47,4 @@ DeclareCategory("IsMemoisedFunction", IsFunction);
 #DeclareOperation("CallFuncList", [IsMemoisedFunction, IsList]);
 
 BindGlobal("MEMO_OUT", ".out");
+BindGlobal("MEMO_KEY", ".key");
