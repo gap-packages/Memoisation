@@ -13,7 +13,7 @@ function(func, args...)
   opts := rec(cache := "file://memo/",
               funcname := NameFunction(func),
               key := IdFunc,  # default: use args as key
-              storekey := false,  # TODO
+              storekey := false,
               pickle := IO_Pickle,
               unpickle := IO_Unpickle,
               hash := MEMO_Hash,
