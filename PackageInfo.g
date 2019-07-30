@@ -89,6 +89,7 @@ Dependencies := rec(
   GAP := ">= 4.9",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.6.1" ],
                            [ "curlInterface", ">= 1.0.1" ],
+                           [ "io", ">= 4.0" ],
                            [ "json", ">= 2.0" ],
                            [ "crypting", ">= 0.8" ] ],
   SuggestedOtherPackages := [ ],

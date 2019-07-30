@@ -20,6 +20,12 @@ DeclareGlobalFunction("MEMO_Hash");
 DeclareGlobalFunction("MEMO_KeyToFilename");
 
 #! @Description
+#!  Return the key used to create a given filename, assuming an unhash function
+#!  was provided
+#! @Arguments memo, filename
+DeclareGlobalFunction("MEMO_FilenameToKey");
+
+#! @Description
 #!   Default directory to store memoisation tables
 BindGlobal("MEMO_StoreDir", "./memo/");
 

@@ -52,9 +52,11 @@ function(func, args...)
                cache := opts.cache,
                funcname := opts.funcname,
                key := opts.key,
+               storekey := opts.storekey,
                pickle := opts.pickle,
                unpickle := opts.unpickle,
                hash := opts.hash,
+               unhash := opts.unhash
              );
 
   # Objectify
@@ -80,6 +82,14 @@ function(memo, args)
     filename := MEMO_KeyToFilename(memo, key, MEMO_OUT);
     Print("Using filename ", filename, "\n");
     key_filename := MEMO_KeyToFilename(memo, key, MEMO_KEY);
+
+    if memo!.unhash <> fail then
+      # Check injectivity
+      storedkey := MEMO_FilenameToKey(memo, filename);
+      if storedkey <> key then
+        Error("Hash collision: unhash is not the inverse of hash");
+      fi;
+    fi;
 
     if IsReadableFile(filename) then
       # Retrieve cached answer
@@ -148,6 +158,18 @@ function(memo, key, ext)
   h := memo!.hash(key);
   fname := Concatenation(h, ext);
   return Filename(Directory(memo!.dir), fname);
+end);
+
+InstallGlobalFunction(MEMO_FilenameToKey,
+function(memo, filename)
+  local pos, h;
+  if StartsWith(filename, memo!.dir) then  # remove directory
+    filename := filename{[Length(memo!.dir) + 2 .. Length(filename)]};
+  fi;
+  # Remove extension
+  pos := Remove(Positions(filename, '.'));  # position of final dot
+  h := filename{[1 .. pos - 1]};
+  return memo!.unhash(h);
 end);
 
 InstallGlobalFunction(MEMO_ClearStore,
