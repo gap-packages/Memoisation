@@ -17,8 +17,8 @@ function(func, args...)
               pickle := IO_Pickle,
               unpickle := IO_Unpickle,
               hash := MEMO_Hash,
-              unhash := fail,  # TODO
-              metadata := fail);  # TODO
+              unhash := fail,
+              metadata := fail);
 
   # Process optional argument
   if Length(args) = 1 then
@@ -56,7 +56,8 @@ function(func, args...)
                pickle := opts.pickle,
                unpickle := opts.unpickle,
                hash := opts.hash,
-               unhash := opts.unhash
+               unhash := opts.unhash,
+               metadata := opts.metadata
              );
 
   # Objectify
@@ -70,7 +71,8 @@ InstallMethod(CallFuncList,
 "for a memoised function",
 [IsMemoisedFunction, IsList],
 function(memo, args)
-  local key, filename, key_filename, key_str, storedkey, str, result;
+  local key, filename, key_filename, metadata_filename, storedkey, key_str, str,
+        result, metadata_str;
 
     # Directory
     MEMO_CreateDirRecursively(memo!.dir);
@@ -81,7 +83,10 @@ function(memo, args)
     Print("Got key ", key, "\n");
     filename := MEMO_KeyToFilename(memo, key, MEMO_OUT);
     Print("Using filename ", filename, "\n");
+
+    # Other filenames we might not need
     key_filename := MEMO_KeyToFilename(memo, key, MEMO_KEY);
+    metadata_filename := MEMO_KeyToFilename(memo, key, MEMO_META);
 
     if memo!.unhash <> fail then
       # Check injectivity
@@ -118,8 +123,14 @@ function(memo, args)
       # Store key
       if memo!.storekey then
         key_str := memo!.pickle(key);
-        Print("Storing key at ", key_str, "...\n");
+        Print("Storing key at ", key_filename, "...\n");
         FileString(key_filename, key_str);
+      fi;
+      # Store metadata
+      if memo!.metadata <> fail then
+        metadata_str := memo!.metadata();
+        Print("Storing metadata at ", metadata_filename, "...\n");
+        FileString(metadata_filename, metadata_str);
       fi;
     fi;
 

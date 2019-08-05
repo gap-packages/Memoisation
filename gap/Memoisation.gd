@@ -54,3 +54,4 @@ DeclareCategory("IsMemoisedFunction", IsFunction);
 
 BindGlobal("MEMO_OUT", ".out");
 BindGlobal("MEMO_KEY", ".key");
+BindGlobal("MEMO_META", ".meta");
