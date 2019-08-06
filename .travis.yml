@@ -7,26 +7,34 @@ env:
     - GAP_PKGS_TO_CLONE="json io crypting curlInterface profiling"
     - GAP_PKGS_TO_BUILD="json io crypting curlInterface profiling"
 
+branches:
+  except:
+    - gh-pages
+
 addons:
   apt_packages:
     - libgmp-dev
     - libreadline-dev
-    - libgmp-dev:i386
-    - libreadline-dev:i386
-    - gcc-multilib
-    - g++-multilib
+    - texlive-latex-extra
+    - texlive-fonts-recommended
 
 matrix:
   include:
-    - env: CFLAGS="-O2" CC=clang CXX=clang++
-      compiler: clang
+    - env: GAPBRANCH="stable-4.10"
     - env: CFLAGS="-O2"
       compiler: gcc
+    - env: CFLAGS="-O2" CC=clang CXX=clang++
+      compiler: clang
     - env: ABI=32
-
-branches:
-  only:
-    - master
+      addons:
+        apt_packages:
+          - libcurl4-openssl-dev:i386
+          - libgmp-dev:i386
+          - libreadline-dev:i386
+          - texlive-latex-extra:i386
+          - texlive-fonts-recommended:i386
+          - gcc-multilib
+          - g++-multilib
 
 before_script:
   - export GAPROOT="$HOME/gap"
