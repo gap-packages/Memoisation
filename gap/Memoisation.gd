@@ -27,7 +27,7 @@ DeclareGlobalFunction("MEMO_FilenameToKey");
 
 #! @Description
 #!   Default directory to store memoisation tables
-BindGlobal("MEMO_StoreDir", "./memo/");
+BindGlobal("MEMO_DefaultCache", "file://memo/");
 
 #! @Description
 #!   Filename extension for memoisation tables

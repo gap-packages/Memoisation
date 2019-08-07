@@ -10,7 +10,7 @@ function(func, args...)
         rnam, basedir, dir, memo, cache, type;
 
   # Default options
-  opts := rec(cache := "file://memo/",
+  opts := rec(cache := MEMO_DefaultCache,
               funcname := NameFunction(func),
               key := IdFunc,  # default: use args as key
               storekey := false,
@@ -183,18 +183,18 @@ function(memo, filename)
   return memo!.unhash(h);
 end);
 
-InstallGlobalFunction(MEMO_ClearStore,
-function(funcs...)
-  local func;
-  if IsEmpty(funcs) then
-    RemoveDirectoryRecursively(MEMO_StoreDir);
-  fi;
-  for func in funcs do
-    RemoveFile(Concatenation(MEMO_StoreDir,
-                             NameFunction(func),
-                             MEMO_FileExt));
-  od;
-end);
+# InstallGlobalFunction(MEMO_ClearStore,
+# function(funcs...)
+#   local func;
+#   if IsEmpty(funcs) then
+#     RemoveDirectoryRecursively(MEMO_StoreDir);
+#   fi;
+#   for func in funcs do
+#     RemoveFile(Concatenation(MEMO_StoreDir,
+#                              NameFunction(func),
+#                              MEMO_FileExt));
+#   od;
+# end);
 
 #
 # 2. Helper functions
