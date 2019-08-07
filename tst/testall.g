@@ -6,6 +6,11 @@
 #
 LoadPackage( "Memoisation" );
 
+# Use temporary cache directory
+MakeReadWriteGlobal("MEMO_DefaultCache");
+tmp_dir := Filename(DirectoryTemporary(), "");
+MEMO_DefaultCache := Concatenation("file://", tmp_dir);
+
 TestDirectory(DirectoriesPackageLibrary( "Memoisation", "tst" ),
   rec(exitGAP := true));
 
