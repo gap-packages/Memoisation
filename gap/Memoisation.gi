@@ -72,7 +72,7 @@ InstallMethod(CallFuncList,
 [IsMemoisedFunction, IsList],
 function(memo, args)
   local key, filename, key_filename, metadata_filename, storedkey, key_str, str,
-        result, metadata_str;
+        result, write, metadata_str;
 
     # Directory
     MEMO_CreateDirRecursively(memo!.dir);
@@ -119,7 +119,11 @@ function(memo, args)
       # Compute and store
       result := CallFuncList(memo!.func, args);
       str := memo!.pickle(result);
-      FileString(filename, str);
+      write := FileString(filename, str);
+      if write = fail then
+        Error("Memoisation: could not write result to ", filename);
+        # user can "return;" and result will still be returned
+      fi;
       # Store key
       if memo!.storekey then
         key_str := memo!.pickle(key);
