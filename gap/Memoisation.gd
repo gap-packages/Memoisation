@@ -52,6 +52,9 @@ DeclareCategory("IsMemoisedFunction", IsFunction);
 
 #DeclareOperation("CallFuncList", [IsMemoisedFunction, IsList]);
 
+DeclareInfoClass("InfoMemoisation");
+SetInfoLevel(InfoMemoisation, 2);
+
 BindGlobal("MEMO_OUT", ".out");
 BindGlobal("MEMO_KEY", ".key");
 BindGlobal("MEMO_META", ".meta");

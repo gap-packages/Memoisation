@@ -76,13 +76,12 @@ function(memo, args)
 
     # Directory
     MEMO_CreateDirRecursively(memo!.dir);
-    Print("Using directory ", memo!.dir, "\n");
 
     # Compute memoisation stuff
     key := memo!.key(args);
-    Print("Got key ", key, "\n");
+    Info(InfoMemoisation, 2, "Memo key: ", key);
     filename := MEMO_KeyToFilename(memo, key, MEMO_OUT);
-    Print("Using filename ", filename, "\n");
+    Info(InfoMemoisation, 2, "Using filename ", filename);
 
     # Other filenames we might not need
     key_filename := MEMO_KeyToFilename(memo, key, MEMO_KEY);
@@ -98,42 +97,45 @@ function(memo, args)
 
     if IsReadableFile(filename) then
       # Retrieve cached answer
-      Print("Getting cached answer from ", filename, "...\n");
+      Info(InfoMemoisation, 2, "File exists - reading...");
       if memo!.storekey then
-        Print("Checking key in ", key_filename, "...\n");
         key_str := StringFile(key_filename);
         storedkey := memo!.unpickle(key_str);
         if key <> storedkey then
           Error("Hash collision: stored key does not match");
         fi;
+        Info(InfoMemoisation, 2, "Key matches ", key_filename);
       fi;
       str := StringFile(filename);
-      Print("Got string of length ", Length(str), " to unpickle\n");
+      Info(InfoMemoisation, 3, "Got ", Length(str), " bytes from file");
       result := memo!.unpickle(str);
+      Info(InfoMemoisation, 2, "Got cached result from file");
       if Size(args) = 1 and
          (IsAttribute(memo!.func) or IsProperty(memo!.func)) then
-        Print("Setting attribute/property\n");
+        Info(InfoMemoisation, 3, "Setting attribute");
         Setter(memo!.func)(args[1], result);
       fi;
     else
       # Compute and store
       result := CallFuncList(memo!.func, args);
       str := memo!.pickle(result);
+      Info(InfoMemoisation, 2, "File does not exist - computing result...");
       write := FileString(filename, str);
       if write = fail then
         Error("Memoisation: could not write result to ", filename);
         # user can "return;" and result will still be returned
       fi;
+      Info(InfoMemoisation, 2, "Result stored in file");
       # Store key
       if memo!.storekey then
         key_str := memo!.pickle(key);
-        Print("Storing key at ", key_filename, "...\n");
         FileString(key_filename, key_str);
+        Info(InfoMemoisation, 2, "Key stored at ", key_filename);
       fi;
       # Store metadata
       if memo!.metadata <> fail then
         metadata_str := memo!.metadata();
-        Print("Storing metadata at ", metadata_filename, "...\n");
+        Info(InfoMemoisation, 2, "Metadata stored at ", metadata_filename);
         FileString(metadata_filename, metadata_str);
       fi;
     fi;
