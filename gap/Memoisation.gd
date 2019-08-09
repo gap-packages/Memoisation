@@ -5,33 +5,14 @@
 #
 
 #! @Description
-#!   Return a string which identifies the arguments of this function call
-#! @Arguments obj
-DeclareGlobalFunction("MEMO_Key");
-
-#! @Description
-#!   Return an SHA-256 hash string for the key
-#! @Arguments obj
+#!   Return a hash string for the key using IO_Pickle, SHA-256, and base 64.
+#!   This is the default method which users can override by specifying `hash`.
+#! @Arguments key
 DeclareGlobalFunction("MEMO_Hash");
 
 #! @Description
-#!   Return the filename to use for a call, based on its key
-#! @Arguments memo, key, ext
-DeclareGlobalFunction("MEMO_KeyToFilename");
-
-#! @Description
-#!  Return the key used to create a given filename, assuming an unhash function
-#!  was provided
-#! @Arguments memo, filename
-DeclareGlobalFunction("MEMO_FilenameToKey");
-
-#! @Description
-#!   Default directory to store memoisation tables
+#!   Default backend for storage: disk storage in the local directory 'memo'.
 BindGlobal("MEMO_DefaultCache", "file://memo/");
-
-#! @Description
-#!   Filename extension for memoisation tables
-BindGlobal("MEMO_FileExt", "out");
 
 #! @Description
 #!   Clear the memoisation tables of the given functions, or clear all
@@ -54,7 +35,3 @@ DeclareCategory("IsMemoisedFunction", IsFunction);
 
 DeclareInfoClass("InfoMemoisation");
 SetInfoLevel(InfoMemoisation, 2);
-
-BindGlobal("MEMO_OUT", ".out");
-BindGlobal("MEMO_KEY", ".key");
-BindGlobal("MEMO_META", ".meta");

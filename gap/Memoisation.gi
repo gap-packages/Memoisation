@@ -7,7 +7,7 @@
 InstallGlobalFunction(MemoisedFunction,
 function(func, args...)
   local opts, funcname, key, storekey, pickle, unpickle, hash, unhash, metadata,
-        rnam, basedir, dir, memo, cache, type;
+        rnam, memo, type, pos, typestring, path, cachetypes, cachetype;
 
   # Default options
   opts := rec(cache := MEMO_DefaultCache,
@@ -41,15 +41,9 @@ function(func, args...)
                   "and no funcname was specified");
   fi;
 
-  # Directory to use for results
-  basedir := opts.cache{[Length("file://") + 1 .. Length(opts.cache)]};  # TODO
-  dir := Filename(Directory(basedir), opts.funcname);
-
   # Make the record
   memo := rec(
                func := func,
-               dir := dir,
-               cache := opts.cache,
                funcname := opts.funcname,
                key := opts.key,
                storekey := opts.storekey,
@@ -64,6 +58,21 @@ function(func, args...)
   type := NewType(FunctionsFamily, IsMemoisedFunction);
   memo := Objectify(type, memo);
 
+  # Determine which backend to use
+  pos := PositionSublist(opts.cache, "://");
+  if pos = fail then  # no backend specified: use disk
+    typestring := "file";
+    path := opts.cache;
+  else
+    typestring := opts.cache{[1 .. pos-1]};
+    path := opts.cache{[pos+3 .. Length(opts.cache)]};
+  fi;
+  cachetypes := rec(file := MEMO_DiskCache);  # , mongodb := MEMO_MongoDBCache);
+  cachetype := cachetypes.(typestring);
+
+  # Create backend
+  memo!.cache := cachetype(memo, path);
+
   return memo;
 end);
 
@@ -71,76 +80,33 @@ InstallMethod(CallFuncList,
 "for a memoised function",
 [IsMemoisedFunction, IsList],
 function(memo, args)
-  local key, filename, key_filename, metadata_filename, storedkey, key_str, str,
-        result, write, metadata_str;
+  local key, val;
 
-    # Directory
-    MEMO_CreateDirRecursively(memo!.dir);
+  # Compute key
+  key := memo!.key(args);
+  Info(InfoMemoisation, 2, "Memo key: ", key);
 
-    # Compute memoisation stuff
-    key := memo!.key(args);
-    Info(InfoMemoisation, 2, "Memo key: ", key);
-    filename := MEMO_KeyToFilename(memo, key, MEMO_OUT);
-    Info(InfoMemoisation, 2, "Using filename ", filename);
+  # Search in cache
+  if KnowsDictionary(memo!.cache, key) then
+    # Retrieve cached result
+    Info(InfoMemoisation, 2, "Key known!  Loading result from cache...");
+    val := LookupDictionary(memo!.cache, key);
+  else
+    # Compute and store result
+    Info(InfoMemoisation, 2, "Key unknown.  Computing result...");
+    val := CallFuncList(memo!.func, args);
+    AddDictionary(memo!.cache, key, val);
+  fi;
 
-    # Other filenames we might not need
-    key_filename := MEMO_KeyToFilename(memo, key, MEMO_KEY);
-    metadata_filename := MEMO_KeyToFilename(memo, key, MEMO_META);
+  # Set attribute/property
+  if Size(args) = 1 and
+     (IsAttribute(memo!.func) or IsProperty(memo!.func)) and
+     not Tester(memo!.func)(args[1]) then
+    Info(InfoMemoisation, 3, "Setting attribute ", NameFunction(memo!.func));
+    Setter(memo!.func)(args[1], val);
+  fi;
 
-    if memo!.unhash <> fail then
-      # Check injectivity
-      storedkey := MEMO_FilenameToKey(memo, filename);
-      if storedkey <> key then
-        Error("Hash collision: unhash is not the inverse of hash");
-      fi;
-    fi;
-
-    if IsReadableFile(filename) then
-      # Retrieve cached answer
-      Info(InfoMemoisation, 2, "File exists - reading...");
-      if memo!.storekey then
-        key_str := StringFile(key_filename);
-        storedkey := memo!.unpickle(key_str);
-        if key <> storedkey then
-          Error("Hash collision: stored key does not match");
-        fi;
-        Info(InfoMemoisation, 2, "Key matches ", key_filename);
-      fi;
-      str := StringFile(filename);
-      Info(InfoMemoisation, 3, "Got ", Length(str), " bytes from file");
-      result := memo!.unpickle(str);
-      Info(InfoMemoisation, 2, "Got cached result from file");
-      if Size(args) = 1 and
-         (IsAttribute(memo!.func) or IsProperty(memo!.func)) then
-        Info(InfoMemoisation, 3, "Setting attribute");
-        Setter(memo!.func)(args[1], result);
-      fi;
-    else
-      # Compute and store
-      result := CallFuncList(memo!.func, args);
-      str := memo!.pickle(result);
-      Info(InfoMemoisation, 2, "File does not exist - computing result...");
-      write := FileString(filename, str);
-      if write = fail then
-        Error("Memoisation: could not write result to ", filename);
-        # user can "return;" and result will still be returned
-      fi;
-      Info(InfoMemoisation, 2, "Result stored in file");
-      # Store key
-      if memo!.storekey then
-        key_str := memo!.pickle(key);
-        FileString(key_filename, key_str);
-        Info(InfoMemoisation, 2, "Key stored at ", key_filename);
-      fi;
-      # Store metadata
-      if memo!.metadata <> fail then
-        metadata_str := memo!.metadata();
-        Info(InfoMemoisation, 2, "Metadata stored at ", metadata_filename);
-        FileString(metadata_filename, metadata_str);
-      fi;
-    fi;
-
-    return result;
+  return val;
 end);
 
 InstallMethod(ViewObj,
@@ -168,26 +134,6 @@ for delegated_function in [NamesLocalVariablesFunction,
                 [IsMemoisedFunction],
                 memo -> delegated_function(memo!.func));
 od;
-
-InstallGlobalFunction(MEMO_KeyToFilename,
-function(memo, key, ext)
-  local h, fname;
-  h := memo!.hash(key);
-  fname := Concatenation(h, ext);
-  return Filename(Directory(memo!.dir), fname);
-end);
-
-InstallGlobalFunction(MEMO_FilenameToKey,
-function(memo, filename)
-  local pos, h;
-  if StartsWith(filename, memo!.dir) then  # remove directory
-    filename := filename{[Length(memo!.dir) + 2 .. Length(filename)]};
-  fi;
-  # Remove extension
-  pos := Remove(Positions(filename, '.'));  # position of final dot
-  h := filename{[1 .. pos - 1]};
-  return memo!.unhash(h);
-end);
 
 # InstallGlobalFunction(MEMO_ClearStore,
 # function(funcs...)
