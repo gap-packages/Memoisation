@@ -14,12 +14,6 @@ DeclareGlobalFunction("MEMO_Hash");
 #!   Default backend for storage: disk storage in the local directory 'memo'.
 BindGlobal("MEMO_DefaultCache", "file://memo/");
 
-#! @Description
-#!   Clear the memoisation tables of the given functions, or clear all
-#!   memoisation tables if one is not given
-#! @Arguments funcs
-DeclareGlobalFunction("MEMO_ClearStore");
-
 DeclareGlobalFunction("MEMO_CreateDirRecursively");
 
 #! @Description
@@ -31,7 +25,12 @@ DeclareGlobalFunction("MemoisedFunction");
 
 DeclareCategory("IsMemoisedFunction", IsFunction);
 
-#DeclareOperation("CallFuncList", [IsMemoisedFunction, IsList]);
+#! @Description
+#!   Clear all known memoised results from the cache of this memoised function.
+#!   Return `true` if the operation was successful, and `fail` otherwise.
+#! @Returns 
+#!   true or fail
+DeclareOperation("ClearMemoisedFunction", [IsMemoisedFunction]);
 
 DeclareInfoClass("InfoMemoisation");
 SetInfoLevel(InfoMemoisation, 2);

@@ -116,6 +116,28 @@ function(cache, key)
   return val;
 end);
 
+InstallMethod(MEMO_ClearCache,
+"for a memoisation disk cache",
+[MEMO_IsDiskCache],
+function(cache)
+  local dir, file, ext, path;
+  dir := cache!.dir;
+  if not IsDirectoryPath(dir) then
+    return true;
+  fi;
+  for file in DirectoryContents(dir) do
+    for ext in [MEMO_OUT, MEMO_KEY, MEMO_META] do
+      if EndsWith(file, ext) then
+        path := Filename(Directory(dir), file);
+        if RemoveFile(path) <> true then
+          Info(InfoMemoisation, 1, "Failed to delete ", path);
+        fi;
+      fi;
+    od;
+  od;
+  return RemoveDir(dir);
+end);
+
 InstallGlobalFunction(MEMO_KeyToFilename,
 function(cache, key, ext)
   local h, fname;

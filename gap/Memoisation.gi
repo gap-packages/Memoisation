@@ -113,6 +113,13 @@ function(memo, args)
   return val;
 end);
 
+InstallMethod(ClearMemoisedFunction,
+"for a memoised function",
+[IsMemoisedFunction],
+function(memo)
+  return MEMO_ClearCache(memo!.cache);
+end);
+
 InstallMethod(ViewObj,
 "for a memoised function",
 [IsMemoisedFunction],
@@ -138,19 +145,6 @@ for delegated_function in [NamesLocalVariablesFunction,
                 [IsMemoisedFunction],
                 memo -> delegated_function(memo!.func));
 od;
-
-# InstallGlobalFunction(MEMO_ClearStore,
-# function(funcs...)
-#   local func;
-#   if IsEmpty(funcs) then
-#     RemoveDirectoryRecursively(MEMO_StoreDir);
-#   fi;
-#   for func in funcs do
-#     RemoveFile(Concatenation(MEMO_StoreDir,
-#                              NameFunction(func),
-#                              MEMO_FileExt));
-#   od;
-# end);
 
 #
 # 2. Helper functions
