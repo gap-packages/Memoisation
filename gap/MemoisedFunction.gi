@@ -145,16 +145,3 @@ for delegated_function in [NamesLocalVariablesFunction,
                 [IsMemoisedFunction],
                 memo -> delegated_function(memo!.func));
 od;
-
-InstallGlobalFunction(MEMO_Hash,
-function(key)
-  local str, ints, sum, i;
-  str := IO_Pickle(key);  # Pickle the key to a string
-  ints := SHA256String(str);  # Get the SHA-256 checksum in 32-bit chunks
-  sum := 0;  # Bring all 256 bits together into a single integer
-  for i in [1..Length(ints)] do
-    sum := sum + ints[i] * 2 ^ (32 * (i-1));
-  od;
-  str := MEMO_Digits(sum, 64, 43);  # Make into a padded base-64 string
-  return str;
-end);

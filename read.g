@@ -6,4 +6,4 @@
 
 ReadPackage( "Memoisation", "gap/MemoisedFunction.gi");
 ReadPackage( "Memoisation", "gap/DiskCache.gi");
-ReadPackage( "Memoisation", "gap/base64.gi");
+ReadPackage( "Memoisation", "gap/hashing.gi");
