@@ -16,3 +16,5 @@ DeclareGlobalFunction("MEMO_FilenameToKey");
 BindGlobal("MEMO_OUT", ".out");
 BindGlobal("MEMO_KEY", ".key");
 BindGlobal("MEMO_META", ".meta");
+
+DeclareGlobalFunction("MEMO_CreateDirRecursively");

@@ -157,3 +157,22 @@ function(cache, filename)
   h := filename{[1 .. pos - 1]};
   return cache!.memo!.unhash(h);
 end);
+
+InstallGlobalFunction(MEMO_CreateDirRecursively,
+function(dir)
+  # Borrowed from PackageManager
+  local path, newdir, i, res;
+  path := SplitString(dir, "/");
+  newdir := "";
+  for i in [1 .. Length(path)] do
+    Append(newdir, path[i]);
+    Append(newdir, "/");
+    if not IsDirectoryPath(newdir) then
+      res := CreateDir(newdir);
+      if res <> true then
+        return fail;
+      fi;
+    fi;
+  od;
+  return true;
+end);

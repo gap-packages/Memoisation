@@ -146,29 +146,6 @@ for delegated_function in [NamesLocalVariablesFunction,
                 memo -> delegated_function(memo!.func));
 od;
 
-#
-# 2. Helper functions
-#
-
-InstallGlobalFunction(MEMO_CreateDirRecursively,
-function(dir)
-  # Borrowed from PackageManager
-  local path, newdir, i, res;
-  path := SplitString(dir, "/");
-  newdir := "";
-  for i in [1 .. Length(path)] do
-    Append(newdir, path[i]);
-    Append(newdir, "/");
-    if not IsDirectoryPath(newdir) then
-      res := CreateDir(newdir);
-      if res <> true then
-        return fail;
-      fi;
-    fi;
-  od;
-  return true;
-end);
-
 InstallGlobalFunction(MEMO_Hash,
 function(key)
   local str, ints, sum, i;
