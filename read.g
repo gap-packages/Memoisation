@@ -4,6 +4,6 @@
 # Reading the implementation part of the package.
 #
 
-ReadPackage( "Memoisation", "gap/Memoisation.gi");
+ReadPackage( "Memoisation", "gap/MemoisedFunction.gi");
 ReadPackage( "Memoisation", "gap/DiskCache.gi");
 ReadPackage( "Memoisation", "gap/base64.gi");
