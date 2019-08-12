@@ -1,8 +1,5 @@
 DeclareGlobalFunction("MEMO_DiskCache");
-DeclareCategory("MEMO_IsDiskCache", IsLookupDictionary);
-
-DeclareOperation("AddDictionary", [MEMO_IsDiskCache, IsObject, IsObject]);
-DeclareOperation("MEMO_ClearCache", [MEMO_IsDiskCache]);
+DeclareCategory("MEMO_IsDiskCache", MEMO_IsCache);
 
 # Return the filename to use for a call, based on its key
 # Arguments: cache, key, ext
