@@ -120,7 +120,7 @@ InstallMethod(MEMO_ClearCache,
 "for a memoisation disk cache",
 [MEMO_IsDiskCache],
 function(cache)
-  local dir, file, ext, path;
+  local dir, file, ext, path, result;
   dir := cache!.dir;
   if not IsDirectoryPath(dir) then
     return true;
@@ -135,7 +135,11 @@ function(cache)
       fi;
     od;
   od;
-  return RemoveDir(dir);
+  result := RemoveDir(dir);
+  if result = true then
+    return true;
+  fi;
+  return false;
 end);
 
 InstallGlobalFunction(MEMO_KeyToFilename,
