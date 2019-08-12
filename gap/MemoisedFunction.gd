@@ -20,7 +20,8 @@ DeclareCategory("IsMemoisedFunction", IsFunction);
 #! @Description
 #!   Clear all known memoised results from the cache of this memoised function.
 #!   Return `true` if the operation was successful, and `fail` otherwise.
-#! @Returns 
+#! @Arguments memo
+#! @Returns
 #!   true or fail
 DeclareOperation("ClearMemoisedFunction", [IsMemoisedFunction]);
 

@@ -10,8 +10,10 @@ DeclareGlobalFunction("MEMO_KeyToFilename");
 # Arguments: cache, filename
 DeclareGlobalFunction("MEMO_FilenameToKey");
 
+# Filename extensions
 BindGlobal("MEMO_OUT", ".out");
 BindGlobal("MEMO_KEY", ".key");
 BindGlobal("MEMO_META", ".meta");
 
+# Create a directory and any necessary ancestors, given a path
 DeclareGlobalFunction("MEMO_CreateDirRecursively");
