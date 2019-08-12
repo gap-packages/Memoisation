@@ -67,7 +67,7 @@ function(func, args...)
     typestring := opts.cache{[1 .. pos-1]};
     path := opts.cache{[pos+3 .. Length(opts.cache)]};
   fi;
-  cachetypes := rec(file := MEMO_DiskCache);  # , mongodb := MEMO_MongoDBCache);
+  cachetypes := rec(file := MEMO_DiskCache, mongodb := MEMO_MongoDBCache);
   if not typestring in RecNames(cachetypes) then
     ErrorNoReturn("Memoisation: MemoisedFunction: <cache> cannot start with \"",
                   typestring, "://\"");

@@ -6,4 +6,5 @@
 
 ReadPackage( "Memoisation", "gap/MemoisedFunction.gi");
 ReadPackage( "Memoisation", "gap/DiskCache.gi");
+ReadPackage( "Memoisation", "gap/MongoDBCache.gi");
 ReadPackage( "Memoisation", "gap/hashing.gi");
