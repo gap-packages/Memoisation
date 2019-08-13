@@ -1,14 +1,14 @@
 InstallGlobalFunction(MEMO_MongoDBCache,
 function(memo, path)
   local url, cache, type;
-  
+
   # Full URL including function name
   url := path;
   if not EndsWith(url, "/") then
     Add(url, '/');
   fi;
   Append(url, memo!.funcname);
-  
+
   # Make cache object
   cache := rec(memo := memo,  # memoised function
                url := url);  # URL of the database
@@ -23,18 +23,48 @@ InstallMethod(AddDictionary,
 "for a memoisation disk cache and two objects",
 [MEMO_IsMongoDBCache, IsObject, IsObject],
 function(cache, key, val)
-  local memo, post_string, db_response, res;
+  local memo, h, storedkey, query, hash, namespace, result, args, post_string,
+        db_response, res;
   memo := cache!.memo;
-  post_string := Concatenation("funcname=", memo!.funcname,
-                               "&hash=", memo!.hash(key),
-                               "&namespace=", MEMO_MongoDBNamespace,
-                               "&result=", memo!.pickle(val));
+
+  # Get hash
+  h := memo!.hash(key);
+
+  # OPTION: unhash
+  if memo!.unhash <> fail then
+    # unhash and check if key still matches
+    storedkey := memo!.unhash(h);
+    if storedkey <> key then
+      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
+    fi;
+  fi;
+
+  # Construct MongoDB query as record
+  query := rec(funcname := memo!.funcname,
+               hash := h,
+               namespace := MEMO_MongoDBNamespace,
+               result := memo!.pickle(val));
+
+  # OPTION: storekey
+  if memo!.storekey then
+    query.key := memo!.pickle(key);
+  fi;
+
+  # OPTION: metadata
+  if memo!.metadata <> fail then
+    query.metadata := memo!.metadata();
+  fi;
+
+  # Query the server
+  args := List(RecNames(query), rnam -> Concatenation(rnam, "=", query.(rnam)));
+  post_string := JoinStringsWithSeparator(args, "&");
   db_response := PostToURL(cache!.url, post_string);
   if db_response.success = false then
     # No valid response from server
     Error("AddDictionary (MongoDB cache): ", db_response.error);
   fi;
   res := JsonStringToGap(db_response.result);
+
   if res._status = "ERR" then
     # Problem with database
     Error("AddDictionary (MongoDB cache): ", res);
@@ -44,6 +74,8 @@ function(cache, key, val)
   fi;
   Error("AddDictionary (MongoDB cache): ",
         "<res>._status should be \"ERR\" or \"OK\"");
+
+  # no return value
 end);
 
 InstallMethod(KnowsDictionary,
@@ -54,18 +86,33 @@ function(cache, key)
   items := MEMO_MongoDBQuery(cache, key);
   return Length(items) > 0;
 end);
-  
+
 InstallMethod(LookupDictionary,
 "for a memoisation disk cache and an object",
 [MEMO_IsMongoDBCache, IsObject],
 function(cache, key)
-  local items;
+  local memo, items, storedkey;
+  memo := cache!.memo;
+
+  # Request list of items (hopefully length 1)
   items := MEMO_MongoDBQuery(cache, key);
   if Length(items) = 0 then
     # We shouldn't normally get here, as we usually check KnowsDictionary first
+    Info(InfoMemoisation, 1, "No entry found in database");
     return fail;
   fi;
-  return cache!.memo!.unpickle(items[1].result);
+
+  # OPTION: storekey
+  if memo!.storekey then
+    storedkey := memo!.unpickle(items[1].key);
+    # check if key still matches
+    if key <> storedkey then
+      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
+    fi;
+    Info(InfoMemoisation, 2, "Key matches that stored on the server");
+  fi;
+
+  return memo!.unpickle(items[1].result);
 end);
 
 InstallMethod(MEMO_ClearCache,
