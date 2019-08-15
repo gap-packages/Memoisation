@@ -28,7 +28,7 @@ rec(funcname := "double") )
 # Test using some custom options
 gap> triple := x -> x*3;;
 gap> mtriple := MemoisedFunction(triple, rec(storekey := true,
->                                            key := args -> args[1],
+>                                            key := IdFunc,  # Just use x
 >                                            hash := String,
 >                                            funcname := "triple_any_number"));;
 gap> mtriple(5);

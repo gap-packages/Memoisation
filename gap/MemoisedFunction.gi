@@ -12,7 +12,7 @@ function(func, args...)
   # Default options
   opts := rec(cache := MEMO_DefaultCache,
               funcname := NameFunction(func),
-              key := IdFunc,  # default: use args as key
+              key := {args...} -> args,  # default: use list of args as key
               storekey := false,
               pickle := IO_Pickle,
               unpickle := IO_Unpickle,
@@ -22,7 +22,7 @@ function(func, args...)
 
   # Process optional argument
   if Length(args) = 1 then
-    if not IsRecord(opts) then
+    if not IsRecord(args[1]) then
       ErrorNoReturn("Memoisation: MemoisedFunction: ",
                     "2nd argument <opts> should be a record");
     fi;
@@ -87,7 +87,7 @@ function(memo, args)
   local key, val;
 
   # Compute key
-  key := memo!.key(args);
+  key := CallFuncList(memo!.key, args);
   Info(InfoMemoisation, 2, "Memo key: ", key);
 
   # Search in cache
