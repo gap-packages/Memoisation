@@ -67,9 +67,9 @@ false
 # unhash
 gap> exp := MemoisedFunction(x -> 2.71828 ^ x,
 >                            rec(funcname := "exp",
->                                key := Float,
->                                hash := k -> Concatenation("e_to_the_", String(k)),
->                                unhash := s -> Float(s{[10..Length(s)]})));;
+>                                key := x -> String(Float(x)),
+>                                hash := k -> Concatenation("e_to_the_", k),
+>                                unhash := s -> s{[10..Length(s)]}));;
 gap> ClearMemoisedFunction(exp);
 true
 gap> exp(2);;
