@@ -24,6 +24,14 @@ function ( x )
     return x * 2;
 end,
 rec(funcname := "double") )
+gap> ClearMemoisedFunction(mdoub);
+true
+gap> mdoub(13);
+#I  Memo key: [ 13 ]
+#I  Key unknown.  Computing result...
+#I  Using filename MEMODIR/double/7kBFu8v1BAsv2OKlKbOnFXy9uXmNp8dSvgNKPKlAwmn.out
+#I  Result stored in file
+26
 
 # Test using some custom options
 gap> triple := x -> x*3;;
@@ -55,6 +63,10 @@ Error, Memoisation: MemoisedFunction takes 1 or 2 arguments, not 3
 gap> double := x -> x*2;;
 gap> mdoub := MemoisedFunction(double, rec(cache := "myprotocol://www.google.com/"));
 Error, Memoisation: MemoisedFunction: <cache> cannot start with "myprotocol://"
+gap> double := x -> x*2;
+function( x ) ... end
+gap> mdoub := MemoisedFunction(double, true);
+Error, Memoisation: MemoisedFunction: 2nd argument <opts> should be a record
 
 # Specifying a funcname
 gap> square := MemoisedFunction(x -> x*x, rec(funcname := "square"));
@@ -67,16 +79,36 @@ end,
 rec(funcname := "square") )
 
 # Attributes
-gap> G := Group([(1,2,3,4), (1,2)]);;
-gap> msize := MemoisedFunction(Size);
+gap> msize := MemoisedFunction(Size, rec(key := GeneratorsOfGroup));
 <memoised <Attribute "Size">>
+gap> G := Group([(1,2,3,4), (1,2)]);;
 gap> HasSize(G);
 false
 gap> msize(G);
-#I  Memo key: [ Group( [ (1,2,3,4), (1,2) ] ) ]
+#I  Memo key: [ (1,2,3,4), (1,2) ]
 #I  Key unknown.  Computing result...
-#I  Using filename MEMODIR/Size/BtzV8KTVnbcszN7V7JQnarJ3VNqDzUYs_oaporNygqs.out
+#I  Using filename MEMODIR/Size/257eVavHQZrY_KWD3b2pNr14QtWH17Gd4wlUYpYUvrV.out
 #I  Result stored in file
 24
 gap> HasSize(G);
+true
+gap> G := Group([(1,2,3,4), (1,2)]);;
+gap> HasSize(G);
+false
+gap> msize(G);
+#I  Memo key: [ (1,2,3,4), (1,2) ]
+#I  Key known!  Loading result from cache...
+#I  Using filename MEMODIR/Size/257eVavHQZrY_KWD3b2pNr14QtWH17Gd4wlUYpYUvrV.out
+#I  Got cached result from file
+24
+gap> HasSize(G);
+true
+
+# Specify cache
+gap> special_dir := Filename(DirectoryTemporary(), "my_favourite_directory");;
+gap> f := MemoisedFunction(x -> x[1],
+>                          rec(funcname := "first", cache := special_dir));;
+gap> MEMO_IsDiskCache(f!.cache);
+true
+gap> f!.cache!.dir = Filename(Directory(special_dir), "first");
 true
