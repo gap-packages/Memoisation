@@ -82,7 +82,7 @@ function(cache, key)
   Info(InfoMemoisation, 2, "Using filename ", filename);
   if not IsReadableFile(filename) then
     # We shouldn't normally get here, as we usually check KnowsDictionary first
-    Info(InfoMemoisation, 1, "File ", filename, "not readable");
+    Info(InfoMemoisation, 1, "File ", filename, " not readable");
     return fail;
   fi;
 
