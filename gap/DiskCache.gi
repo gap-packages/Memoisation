@@ -19,8 +19,8 @@ InstallMethod(AddDictionary,
 "for a memoisation disk cache and two objects",
 [MEMO_IsDiskCache, IsObject, IsObject],
 function(cache, key, val)
-  local memo, filename, storedkey, str, write, key_filename, key_str,
-        metadata_filename, metadata_str;
+  local memo, filename, str, write, key_filename, key_str, metadata_filename,
+        metadata_str;
   memo := cache!.memo;
 
   # Create directory if needed
@@ -31,15 +31,6 @@ function(cache, key, val)
   # Get filename for storage
   filename := MEMO_KeyToFilename(cache, key, MEMO_OUT);
   Info(InfoMemoisation, 2, "Using filename ", filename);
-
-  # OPTION: unhash
-  if memo!.unhash <> fail then
-    # unhash and check if key still matches
-    storedkey := MEMO_FilenameToKey(cache, filename);
-    if key <> storedkey then
-      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
-    fi;
-  fi;
 
   # Write to disk
   str := memo!.pickle(val);
@@ -105,6 +96,15 @@ function(cache, key)
       ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
     fi;
     Info(InfoMemoisation, 2, "Key matches ", key_filename);
+  fi;
+
+  # OPTION: unhash
+  if memo!.unhash <> fail then
+    # unhash and check if key still matches
+    storedkey := MEMO_FilenameToKey(cache, filename);
+    if key <> storedkey then
+      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
+    fi;
   fi;
 
   # Load result

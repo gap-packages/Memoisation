@@ -17,7 +17,7 @@ function(func, args...)
               pickle := IO_Pickle,
               unpickle := IO_Unpickle,
               hash := MEMO_Hash,
-              unhash := fail,
+              unhash := fail,  # TODO: iterate through keys (storekey or unhash)
               metadata := fail);
 
   # Process optional argument
