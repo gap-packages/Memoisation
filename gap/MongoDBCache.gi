@@ -23,7 +23,7 @@ InstallMethod(AddDictionary,
 "for a memoisation disk cache and two objects",
 [MEMO_IsMongoDBCache, IsObject, IsObject],
 function(cache, key, val)
-  local memo, h, storedkey, query, hash, namespace, result, args, post_string,
+  local memo, h, storedkey, query, namespace, result, args, post_string, url,
         db_response, res;
   memo := cache!.memo;
 
@@ -40,8 +40,7 @@ function(cache, key, val)
   fi;
 
   # Construct MongoDB query as record
-  query := rec(funcname := memo!.funcname,
-               hash := h,
+  query := rec(hash := h,
                namespace := MEMO_MongoDBNamespace,
                result := memo!.pickle(val));
 
@@ -58,6 +57,8 @@ function(cache, key, val)
   # Query the server
   args := List(RecNames(query), rnam -> Concatenation(rnam, "=", query.(rnam)));
   post_string := JoinStringsWithSeparator(args, "&");
+  url := cache!.url;
+  Info(InfoMemoisation, 3, "Posting to ", url);
   db_response := PostToURL(cache!.url, post_string);
   if db_response.success = false then
     # No valid response from server
@@ -82,21 +83,22 @@ InstallMethod(KnowsDictionary,
 "for a memoisation disk cache and an object",
 [MEMO_IsMongoDBCache, IsObject],
 function(cache, key)
-  local items;
-  items := MEMO_MongoDBQuery(cache, key);
-  return Length(items) > 0;
+  local item;
+  item := MEMO_MongoDBQuery(cache, key);
+  return item <> fail;
 end);
 
 InstallMethod(LookupDictionary,
 "for a memoisation disk cache and an object",
 [MEMO_IsMongoDBCache, IsObject],
 function(cache, key)
-  local memo, items, storedkey;
+  local memo, item, storedkey;
   memo := cache!.memo;
 
-  # Request list of items (hopefully length 1)
-  items := MEMO_MongoDBQuery(cache, key);
-  if Length(items) = 0 then
+  # Request item from database
+  item := MEMO_MongoDBQuery(cache, key);
+  Info(InfoMemoisation, 3, "Fetching from ", cache!.url);
+  if item = fail then
     # We shouldn't normally get here, as we usually check KnowsDictionary first
     Info(InfoMemoisation, 1, "No entry found in database");
     return fail;
@@ -104,15 +106,15 @@ function(cache, key)
 
   # OPTION: storekey
   if memo!.storekey then
-    storedkey := memo!.unpickle(items[1].key);
+    storedkey := memo!.unpickle(item.key);
     # check if key still matches
     if key <> storedkey then
       ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
     fi;
-    Info(InfoMemoisation, 2, "Key matches that stored on the server");
+    Info(InfoMemoisation, 3, "Key matches that stored on the server");
   fi;
 
-  return memo!.unpickle(items[1].result);
+  return memo!.unpickle(item.result);
 end);
 
 InstallMethod(MEMO_ClearCache,
@@ -129,21 +131,36 @@ end);
 
 InstallGlobalFunction(MEMO_MongoDBQuery,
 function(cache, key)
-  local memo, url, db_response, items;
+  local memo, query, url, db_response, item;
   memo := cache!.memo;
-  url := Concatenation(cache!.url,
-                       "?where={%22funcname%22:%22", memo!.funcname,  # needed?
-                       "%22,%22hash%22:%22", memo!.hash(key),
-                       "%22}");  # TODO: pypersist just GETs /funcname/hash
+
+  # Construct the arguments
+  query := rec(namespace := MEMO_MongoDBNamespace);
+  query := List(RecNames(query), rnam -> Concatenation("%22",
+                                                      rnam,
+                                                      "%22=%22",
+                                                      query.(rnam),
+                                                      "%22"));
+  query := JoinStringsWithSeparator(query, ",");
+  url := Concatenation(cache!.url, "/", memo!.hash(key),
+                       "?where={", query, "}");
+  Info(InfoMemoisation, 3, "Querying ", url);
   db_response := DownloadURL(url);
   if db_response.success = false then
     # No valid response from server
     Error("MongoDB cache: ", db_response.error);
   fi;
-  items := JsonStringToGap(db_response.result)._items;
-  if Length(items) >= 2 then
-    Error("MongoDB cache: Multiple database entries for function ",
-          memo!.funcname, " and hash ", memo!.hash(key));
+  item := JsonStringToGap(db_response.result);
+  if IsBound(item._status) and item._status = "ERR" then
+    if item._error.code = 404 then
+      # No result for this hash on server (no problem!)
+      return fail;
+    else
+      # Something else went wrong
+      Error("MongoDB cache: ", item._error.code, " ", item._error.message);
+    fi;
   fi;
-  return items;
+
+  # Return a single item as a record
+  return item;
 end);

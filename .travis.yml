@@ -1,4 +1,6 @@
 language: c
+services:
+  - mongodb  # this might not launch fast enough - we could need a delay
 env:
   global:
     - GAPROOT=gaproot
@@ -35,6 +37,9 @@ matrix:
           - texlive-fonts-recommended:i386
           - gcc-multilib
           - g++-multilib
+
+install:
+  - pip install --user eve
 
 before_script:
   - export GAPROOT="$HOME/gap"
