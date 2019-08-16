@@ -81,5 +81,34 @@ gap> square(12);
 #I  Fetching from localhost:5000/persist/square
 Error, Hash collision: <key> does not match <storedkey>
 
+# Metadata
+gap> time_string := {} -> Concatenation("Result cached at ",
+>                                       String(IO_gettimeofday().tv_sec));;
+gap> deg_to_rad := MemoisedFunction(deg -> deg * 3.14 / 180,
+>                                   rec(funcname := "deg_to_rad",
+>                                       cache := "mongodb://localhost:5000/persist",
+>                                       storekey := true,
+>                                       hash := L -> String(L[1]),
+>                                       metadata := time_string));;
+gap> ClearMemoisedFunction(deg_to_rad);
+true
+gap> right_angle := deg_to_rad(90);;
+#I  Memo key: [ 90 ]
+#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
+#I  Key unknown.  Computing result...
+#I  Posting to localhost:5000/persist/deg_to_rad
+gap> AbsoluteValue(right_angle - 3.14159 / 2) < 0.001;
+true
+gap> meta := MEMO_MongoDBQuery(deg_to_rad!.cache, [90]).metadata;;
+#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
+gap> StartsWith(meta, "Result cached at 1");  # fails in 2033
+true
+gap> Length(meta) = Length("Result cached at 1565877929");  # fails in 2286
+true
+gap> ClearMemoisedFunction(deg_to_rad);
+true
+gap> ClearMemoisedFunction(deg_to_rad);
+true
+
 # Kill MongoDB server
 gap> CloseStream(SERVER);
