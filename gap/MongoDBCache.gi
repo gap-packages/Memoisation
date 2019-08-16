@@ -30,15 +30,6 @@ function(cache, key, val)
   # Get hash
   h := memo!.hash(key);
 
-  # OPTION: unhash
-  if memo!.unhash <> fail then
-    # unhash and check if key still matches
-    storedkey := memo!.unhash(h);
-    if storedkey <> key then
-      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
-    fi;
-  fi;
-
   # Construct MongoDB query as record
   query := rec(hash := h,
                namespace := MEMO_MongoDBNamespace,
@@ -102,6 +93,15 @@ function(cache, key)
     # We shouldn't normally get here, as we usually check KnowsDictionary first
     Info(InfoMemoisation, 1, "No entry found in database");
     return fail;
+  fi;
+
+  # OPTION: unhash
+  if memo!.unhash <> fail then
+    # unhash and check if key still matches
+    storedkey := memo!.unhash(item.hash);
+    if storedkey <> key then
+      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
+    fi;
   fi;
 
   # OPTION: storekey
