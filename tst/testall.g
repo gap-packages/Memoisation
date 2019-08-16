@@ -11,6 +11,9 @@ MakeReadWriteGlobal("MEMO_DefaultCache");
 tmp_dir := Filename(DirectoryTemporary(), "");
 MEMO_DefaultCache := Concatenation("file://", tmp_dir);
 
+# Test info statements
+SetInfoLevel(InfoMemoisation, 3);
+
 compareFunction := function(expected, found)
   # MEMODIR should match the temporary directory
   expected := ReplacedString(expected, "MEMODIR/", tmp_dir);

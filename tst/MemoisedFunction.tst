@@ -16,6 +16,7 @@ gap> mdoub(13);
 #I  Memo key: [ 13 ]
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/double/7kBFu8v1BAsv2OKlKbOnFXy9uXmNp8dSvgNKPKlAwmn.out
+#I  Got 8 bytes from file
 #I  Got cached result from file
 26
 gap> Print(mdoub, "\n");
@@ -51,6 +52,7 @@ gap> mtriple(5);
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/triple_any_number/5.out
 #I  Key matches MEMODIR/triple_any_number/5.key
+#I  Got 7 bytes from file
 #I  Got cached result from file
 15
 
@@ -99,7 +101,9 @@ gap> msize(G);
 #I  Memo key: [ (1,2,3,4), (1,2) ]
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/Size/257eVavHQZrY_KWD3b2pNr14QtWH17Gd4wlUYpYUvrV.out
+#I  Got 8 bytes from file
 #I  Got cached result from file
+#I  Setting attribute Size
 24
 gap> HasSize(G);
 true

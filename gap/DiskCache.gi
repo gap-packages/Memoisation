@@ -30,7 +30,7 @@ function(cache, key, val)
 
   # Get filename for storage
   filename := MEMO_KeyToFilename(cache, key, MEMO_OUT);
-  Info(InfoMemoisation, 2, "Using filename ", filename);
+  Info(InfoMemoisation, 3, "Using filename ", filename);
 
   # Write to disk
   str := memo!.pickle(val);
@@ -39,7 +39,7 @@ function(cache, key, val)
     Error("Memoisation: could not write result to ", filename);
     # user can "return;" and result will still be returned
   else
-    Info(InfoMemoisation, 2, "Result stored in file");
+    Info(InfoMemoisation, 3, "Result stored in file");
   fi;
 
   # OPTION: storekey
@@ -47,7 +47,7 @@ function(cache, key, val)
     key_filename := MEMO_KeyToFilename(cache, key, MEMO_KEY);
     key_str := memo!.pickle(key);
     FileString(key_filename, key_str);
-    Info(InfoMemoisation, 2, "Key stored at ", key_filename);
+    Info(InfoMemoisation, 3, "Key stored at ", key_filename);
   fi;
 
   # OPTION: metadata
@@ -55,7 +55,7 @@ function(cache, key, val)
     metadata_filename := MEMO_KeyToFilename(cache, key, MEMO_META);
     metadata_str := memo!.metadata();
     FileString(metadata_filename, metadata_str);
-    Info(InfoMemoisation, 2, "Metadata stored at ", metadata_filename);
+    Info(InfoMemoisation, 3, "Metadata stored at ", metadata_filename);
   fi;
 
   # no return value
@@ -79,7 +79,7 @@ function(cache, key)
 
   # Get filename
   filename := MEMO_KeyToFilename(cache, key, MEMO_OUT);
-  Info(InfoMemoisation, 2, "Using filename ", filename);
+  Info(InfoMemoisation, 3, "Using filename ", filename);
   if not IsReadableFile(filename) then
     # We shouldn't normally get here, as we usually check KnowsDictionary first
     Info(InfoMemoisation, 1, "File ", filename, " not readable");
@@ -95,7 +95,7 @@ function(cache, key)
     if key <> storedkey then
       ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
     fi;
-    Info(InfoMemoisation, 2, "Key matches ", key_filename);
+    Info(InfoMemoisation, 3, "Key matches ", key_filename);
   fi;
 
   # OPTION: unhash
@@ -111,7 +111,7 @@ function(cache, key)
   str := StringFile(filename);
   Info(InfoMemoisation, 3, "Got ", Length(str), " bytes from file");
   val := memo!.unpickle(str);
-  Info(InfoMemoisation, 2, "Got cached result from file");
+  Info(InfoMemoisation, 3, "Got cached result from file");
 
   return val;
 end);

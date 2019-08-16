@@ -32,7 +32,7 @@ DeclareOperation("ClearMemoisedFunction", [IsMemoisedFunction]);
 #!     * 1 - Problems only: messages describing what went wrong, with no
 #!           messages if an operation is successful
 #!     * 2 - Progress: also shows step-by-step progress of operations
-#!     * 3 - All: includes extra information such as setting attributes
+#!     * 3 - All: includes extra information such as attributes and backends
 #!
 #!   Set this using, for example `SetInfoLevel(InfoMemoisation, 1)`.
 #!   Default value is 2.
