@@ -1,0 +1,53 @@
+@Chapter Introduction
+
+This package provides *memoised functions*.  A memoised function wraps an
+ordinary GAP function, and caches its outputs so that they do not need to be
+computed again later.  This cache is stored in a permanent format that persists
+between different GAP sessions, different users, and even different locations.
+It is also compatible with the *pypersist* library for Python, allowing results
+to be shared between GAP and Python or Sage.
+
+@Section A quick example
+
+The following example shows a simple use of <Ref Func="MemoisedFunction"/> to
+begin caching the results of a function to disk.
+
+@BeginLogSession
+#! gap> triple := x -> x * 3;
+#! function( x ) ... end
+#! gap> mtriple := MemoisedFunction(triple);
+#! <memoised function( x ) ... end>
+#! gap> mtriple(3);
+#! #I  Memo key: [ 3 ]
+#! #I  Key unknown.  Computing result...
+#! 9
+#! gap> mtriple(3);
+#! #I  Memo key: [ 3 ]
+#! #I  Key known!  Loading result from cache...
+#! 9
+@EndLogSession
+
+The memoised function `mtriple` behaves just like the function `triple` that it
+wraps, but if the same call is repeated, its result is loaded from the cache
+instead of being recomputed.  This cache even persists across sessions!
+
+Additional options can be specified, as shown here:
+
+@BeginLogSession
+#! gap> msize := MemoisedFunction(Size, rec(key := GeneratorsOfGroup,
+#! >                                        storekey := true,
+#! >                                        cache := "file://~/Desktop/mycache"));
+#! <memoised <Attribute "Size">>
+#! gap> msize(SymmetricGroup(6));
+#! #I  Memo key: [ (1,2,3,4,5,6), (1,2) ]
+#! #I  Key unknown.  Computing result...
+#! 720
+#! gap> msize(Group((5,6,1,2,3,4), (1,2)));
+#! #I  Memo key: [ (1,2,3,4,5,6), (1,2) ]
+#! #I  Key known!  Loading result from cache...
+#! 720
+@EndLogSession
+
+All these options are explained in the next chapter.
+
+@Chapter Commands

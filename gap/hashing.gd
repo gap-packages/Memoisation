@@ -1,7 +1,5 @@
-#! @Description
-#!   Return a hash string for the key using IO_Pickle, SHA-256, and base 64.
-#!   This is the default method which users can override by specifying `hash`.
-#! @Arguments key
+# Return a hash string for the key using IO_Pickle, SHA-256, and base 64.
+# This is the default method which users can override by specifying `hash`.
 DeclareGlobalFunction("MEMO_Hash");
 
 # Write the integer `n` in base `base`, optionally padding to length `minlen`

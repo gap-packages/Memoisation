@@ -1,3 +1,7 @@
+#! @Chapter Commands
+
+#! @Section Memoised functions
+
 #! @Description
 #!   Return a special function object in the category `IsMemoisedFunction`.
 #!   This will be functionally the same as `func`, but using persistent
