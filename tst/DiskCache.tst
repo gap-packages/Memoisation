@@ -113,3 +113,30 @@ gap> square(12);
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/square/16.out
 Error, Hash collision: <key> does not match <storedkey>
+
+# storekey collision
+gap> cube := MemoisedFunction(x -> x * x * x,
+>                             rec(funcname := "cube",
+>                                 key := x -> x,
+>                                 hash := l -> "16",
+>                                 storekey := true));;  # only correct for x=16
+gap> cube(16);
+#I  Memo key: 16
+#I  Key unknown.  Computing result...
+#I  Using filename MEMODIR/cube/16.out
+#I  Result stored in file
+#I  Key stored at MEMODIR/cube/16.key
+4096
+gap> cube(16);
+#I  Memo key: 16
+#I  Key known!  Loading result from cache...
+#I  Using filename MEMODIR/cube/16.out
+#I  Key matches MEMODIR/cube/16.key
+#I  Got 10 bytes from file
+#I  Got cached result from file
+4096
+gap> cube(12);
+#I  Memo key: 12
+#I  Key known!  Loading result from cache...
+#I  Using filename MEMODIR/cube/16.out
+Error, Hash collision: <key> does not match <storedkey>

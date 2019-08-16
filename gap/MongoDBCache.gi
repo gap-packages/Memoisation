@@ -90,20 +90,10 @@ function(cache, key)
 
   # Request item from database
   item := MEMO_MongoDBQuery(cache, key);
-  Info(InfoMemoisation, 3, "Fetching from ", cache!.url);
   if item = fail then
     # We shouldn't normally get here, as we usually check KnowsDictionary first
     Info(InfoMemoisation, 1, "No entry found in database");
     return fail;
-  fi;
-
-  # OPTION: unhash
-  if memo!.unhash <> fail then
-    # unhash and check if key still matches
-    storedkey := memo!.unhash(item.hash);
-    if storedkey <> key then
-      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
-    fi;
   fi;
 
   # OPTION: storekey
@@ -114,6 +104,15 @@ function(cache, key)
       ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
     fi;
     Info(InfoMemoisation, 3, "Key matches that stored on the server");
+  fi;
+
+  # OPTION: unhash
+  if memo!.unhash <> fail then
+    # unhash and check if key still matches
+    storedkey := memo!.unhash(item.hash);
+    if storedkey <> key then
+      ErrorNoReturn("Hash collision: <key> does not match <storedkey>");
+    fi;
   fi;
 
   return memo!.unpickle(item.result);

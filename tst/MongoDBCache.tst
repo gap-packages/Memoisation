@@ -23,7 +23,6 @@ gap> mq(101);
 #I  Querying localhost:5000/persist/quint/94TlBvHCAjh64_t67c127xiBiQLDhfwmbDiJoNq84lR?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
 #I  Querying localhost:5000/persist/quint/94TlBvHCAjh64_t67c127xiBiQLDhfwmbDiJoNq84lR?where={%22namespace%22=%22gapmemo%22}
-#I  Fetching from localhost:5000/persist/quint
 505
 
 # unhash
@@ -46,7 +45,6 @@ gap> exp(2.0);;  # same key as last
 #I  Querying localhost:5000/persist/exp/e_to_the_2.?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
 #I  Querying localhost:5000/persist/exp/e_to_the_2.?where={%22namespace%22=%22gapmemo%22}
-#I  Fetching from localhost:5000/persist/exp
 gap> exp(-1);;
 #I  Memo key: -1.
 #I  Querying localhost:5000/persist/exp/e_to_the_-1.?where={%22namespace%22=%22gapmemo%22}
@@ -75,14 +73,42 @@ gap> square(16);
 #I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
 #I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
-#I  Fetching from localhost:5000/persist/square
 256
 gap> square(12);
 #I  Memo key: 12
 #I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
 #I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
-#I  Fetching from localhost:5000/persist/square
+Error, Hash collision: <key> does not match <storedkey>
+
+# storekey collision
+gap> square := MemoisedFunction(x -> x * x,
+>                               rec(funcname := "square",
+>                                   cache := "mongodb://localhost:5000/persist",
+>                                   key := x -> x,
+>                                   hash := l -> "16",
+>                                   storekey := true));;  # only correct for x=16
+gap> ClearMemoisedFunction(square);
+true
+gap> square(16);
+#I  Memo key: 16
+#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
+#I  Key unknown.  Computing result...
+#I  Posting to localhost:5000/persist/square
+#I  (including result, hash, key, namespace)
+256
+gap> square(16);
+#I  Memo key: 16
+#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
+#I  Key known!  Loading result from cache...
+#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
+#I  Key matches that stored on the server
+256
+gap> square(12);
+#I  Memo key: 12
+#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
+#I  Key known!  Loading result from cache...
+#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 Error, Hash collision: <key> does not match <storedkey>
 
 # Metadata
@@ -102,6 +128,12 @@ gap> right_angle := deg_to_rad(90);;
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/deg_to_rad
 #I  (including result, hash, key, metadata, namespace)
+gap> right_angle := deg_to_rad(90);;
+#I  Memo key: [ 90 ]
+#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
+#I  Key known!  Loading result from cache...
+#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
+#I  Key matches that stored on the server
 gap> AbsoluteValue(right_angle - 3.14159 / 2) < 0.001;
 true
 gap> meta := MEMO_MongoDBQuery(deg_to_rad!.cache, [90]).metadata;;
@@ -114,6 +146,25 @@ gap> ClearMemoisedFunction(deg_to_rad);
 true
 gap> ClearMemoisedFunction(deg_to_rad);
 true
+gap> LookupDictionary(deg_to_rad!.cache, [180]);
+#I  Querying localhost:5000/persist/deg_to_rad/180?where={%22namespace%22=%22gapmemo%22}
+#I  No entry found in database
+fail
 
 # Kill MongoDB server
 gap> CloseStream(SERVER);
+
+# Errors when MongoDB server is not running
+gap> quint := x -> x * 5;;
+gap> mq := MemoisedFunction(quint, rec(cache := "mongodb://localhost:5000/persist"));
+<memoised function( x ) ... end>
+gap> AddDictionary(mq!.cache, 3, 15);
+#I  Posting to localhost:5000/persist/quint
+#I  (including result, hash, namespace)
+Error, AddDictionary (MongoDB cache): Failed to connect to localhost port 5000: Connection refused
+gap> ClearMemoisedFunction(mq);
+Error, MongoDB cache: failed to clear
+gap> mq(10);
+#I  Memo key: [ 10 ]
+#I  Querying localhost:5000/persist/quint/CZCaIiskta1Wl_P-BCbYX4URqHmX1m-OS6ocAVgK5Lk?where={%22namespace%22=%22gapmemo%22}
+Error, MongoDB cache: Failed to connect to localhost port 5000: Connection refused
