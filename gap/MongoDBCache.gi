@@ -50,6 +50,8 @@ function(cache, key, val)
   post_string := JoinStringsWithSeparator(args, "&");
   url := cache!.url;
   Info(InfoMemoisation, 3, "Posting to ", url);
+  Info(InfoMemoisation, 3, "(including ",
+       JoinStringsWithSeparator(RecNames(query), ", "), ")");
   db_response := PostToURL(cache!.url, post_string);
   if db_response.success = false then
     # No valid response from server
