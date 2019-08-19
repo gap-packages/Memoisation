@@ -20,7 +20,7 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Michael",
     LastName := "Torpey",
-    WWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~mct25/",
+    WWWHome := "https://mtorpey.github.io/",
     Email := "mct25@st-andrews.ac.uk",
     PostalAddress := Concatenation(
                "School of Computer Science\n",
@@ -33,7 +33,7 @@ Persons := [
   ),
   rec(
     IsAuthor := true,
-    IsMaintainer := true,
+    IsMaintainer := false,
     FirstNames := "Markus",
     LastName := "Pfeiffer",
     WWWHome := "https://markusp.morphism.de/",
