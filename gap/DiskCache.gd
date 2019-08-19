@@ -1,3 +1,9 @@
+#! @Chapter Types of cache
+
+#! @Section Disk cache
+
+#! We can cache to the local disk.
+
 DeclareGlobalFunction("MEMO_DiskCache");
 DeclareCategory("MEMO_IsDiskCache", MEMO_IsCache);
 

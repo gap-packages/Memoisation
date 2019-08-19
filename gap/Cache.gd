@@ -1,3 +1,7 @@
+#! @Chapter Types of cache
+
+#! Now let's look at caches
+
 #
 # Declarations for MEMO_IsCache, the generic category for memoisation backends.
 #
@@ -16,3 +20,6 @@ DeclareOperation("AddDictionary", [MEMO_IsCache, IsObject, IsObject]);
 
 # Delete all memoised information in this cache
 DeclareOperation("MEMO_ClearCache", [MEMO_IsCache]);
+
+#! @Section Disk cache
+#! @Section MongoDB cache

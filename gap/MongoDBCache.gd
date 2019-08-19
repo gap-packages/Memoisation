@@ -1,3 +1,9 @@
+#! @Chapter Types of cache
+
+#! @Section MongoDB cache
+
+#! We can cache using MongoDB
+
 DeclareGlobalFunction("MEMO_MongoDBCache");
 DeclareCategory("MEMO_IsMongoDBCache", MEMO_IsCache);
 
