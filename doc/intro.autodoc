@@ -1,10 +1,10 @@
 @Chapter Introduction
 
-This package provides *memoised functions*.  A memoised function wraps an
+This package provides **memoised functions**.  A memoised function wraps an
 ordinary GAP function, and caches its outputs so that they do not need to be
 computed again later.  This cache is stored in a permanent format that persists
 between different GAP sessions, different users, and even different locations.
-It is also compatible with the *pypersist* library for Python, allowing results
+It is also compatible with the **pypersist** library for Python, allowing results
 to be shared between GAP and Python or Sage.
 
 @Section A quick example

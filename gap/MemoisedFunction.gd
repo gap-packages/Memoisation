@@ -14,7 +14,8 @@
 #!       This prefix determines which type of cache backend is used: files on
 #!       the local disk or a MongoDB server.  The rest of the string should be a
 #!       path to the directory of the disk cache, or a URL for the MongoDB
-#!       server.  Default is "file://memo/".
+#!       server.  Default is "file://memo/", storing results in a directory
+#!       called "memo" inside the current directory.
 #!     * `funcname` - string that will be used to uniquely describe this
 #!       function, among all functions being stored in the present `cache`.  If
 #!       two functions have the same `cache` and the same `funcname`, they will
@@ -23,11 +24,12 @@
 #!       `MemoisedFunction`) then specifying a `funcname` is mandatory;
 #!       otherwise, `NameFunction(func)` will be used by default.
 #!     * `key` - function that takes the same arguments as `func` and returns
-#!       an object (a __key__).  The `key` function should be chosen such that,
-#!       for two sets of arguments `X` and `Y`, `key(X) = key(Y)` implies
-#!       `func(X) = func(Y)`.  The default simply returns a list of the
-#!       arguments, but one could specify a different `key` function in order to
-#!       reorder arguments or discard any that have no functional effect.
+#!       some object (known as a **key**).  The `key` function should be chosen
+#!       such that, for two sets of arguments `X` and `Y`, `key(X)=key(Y)`
+#!       implies `func(X)=func(Y)`.  The default simply returns a list of the
+#!       arguments, but one could specify a different `key` function, perhaps in
+#!       order to reorder arguments or discard any that have no functional
+#!       effect.
 #!     * `storekey` - boolean specifying whether to store the key along with
 #!       the output when a result is stored.  If `true`, the key will be checked
 #!       when recalling a previously computed value, to check for hash
@@ -35,13 +37,13 @@
 #!       their `hash` values are the same.  Default is `false`.
 #!     * `pickle` - function that converts the output of `func` to a string for
 #!       storage.  Should be the inverse of `unpickle`.  If `storekey` is true,
-#!       this will also be used to store the key.  Default is `IO_Pickle`, which
-#!       does not work for all objects.
+#!       then `pickle` will also be used to store the key.  Default is
+#!       `IO_Pickle`, which does not work for all objects.
 #!     * `unpickle` - function that converts a string back to an object when
 #!       retrieving a computed value from storage.  Should be the inverse of
-#!       `pickle`.  If `storekey` is `true`, this will also be used to retrieve
-#!       the key.  Default is `IO_Unpickle`, which does not work for all
-#!       objects.
+#!       `pickle`.  If `storekey` is `true`, then `unpickle` will also be used
+#!       to retrieve the key.  Default is `IO_Unpickle`, which does not work for
+#!       all objects.
 #!     * `hash` - function that takes a key and produces a string that will be
 #!       used to identify that key.  If this function is not injective, then
 #!       `storekey` can be set to `true` to check for hash collisions.  The
@@ -50,11 +52,16 @@
 #!       chance of collision.
 #!     * `unhash` - function that, if specified, should be the inverse of
 #!       `hash`.  If this is specified, keys will be unhashed after hashing, to
-#!       make sure that no mistakes were made.
+#!       make sure that no mistakes were made.  This option, of course, only
+#!       makes sense if `hash` is injective.
 #!     * `metadata` - function that takes no arguments and returns a string
 #!       containing metadata to be stored with the result currently being
 #!       written.  This might include the current time, or some data identifying
 #!       the user or system that ran the computation.
+#!
+#! A function `func` should only be memoised if it is **purely functional**.  It
+#! does not make sense to memoise a function if it has important side-effects,
+#! or if its output does not depend solely on its inputs.
 #!
 #! @BeginExample
 #! gap> triple := x -> x * 3;
