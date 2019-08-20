@@ -1,0 +1,156 @@
+  
+  [1X2 [33X[0;0YCommands[133X[101X
+  
+  
+  [1X2.1 [33X[0;0YMemoised functions[133X[101X
+  
+  [1X2.1-1 MemoisedFunction[101X
+  
+  [33X[1;0Y[29X[2XMemoisedFunction[102X( [3Xfunc[103X[, [3Xopts[103X] ) [32X function[133X
+  
+  [33X[0;0YReturn  a  special  function object in the category [10XIsMemoisedFunction[110X. This
+  will  be  functionally the same as [10Xfunc[110X, but using persistent memoisation to
+  store and retrieve results from a cache.[133X
+  
+  [33X[0;0YIf the optional argument [10Xopts[110X is specified, it should be a record of options
+  that  customise  how  this  memoisation  is  done. The following options are
+  supported:[133X
+  
+  [30X    [33X[0;6Y[10Xcache[110X - string that starts with either "file://" or "mongodb://". This
+        prefix  determines  which  type of cache backend is used: files on the
+        local  disk  or  a  MongoDB server. The rest of the string should be a
+        path  to  the  directory  of  the disk cache, or a URL for the MongoDB
+        server.  Default  is  "file://memo/",  storing  results in a directory
+        called "memo" inside the current directory.[133X
+  
+  [30X    [33X[0;6Y[10Xfuncname[110X  -  string  that  will  be  used  to  uniquely  describe this
+        function,  among  all  functions being stored in the present [10Xcache[110X. If
+        two  functions  have  the  same [10Xcache[110X and the same [10Xfuncname[110X, they will
+        save  and  load  each others' cached results. If [10XNameFunction(func)[110X is
+        "unknown",  (e.g.  if  [10Xfunc[110X  was  only  defined  inside  this  call to
+        [10XMemoisedFunction[110X)  then specifying a [10Xfuncname[110X is mandatory; otherwise,
+        [10XNameFunction(func)[110X will be used by default.[133X
+  
+  [30X    [33X[0;6Y[10Xkey[110X  - function that takes the same arguments as [10Xfunc[110X and returns some
+        object  (known as a [13Xkey[113X). The [10Xkey[110X function should be chosen such that,
+        for   two   sets   of   arguments   [10XX[110X  and  [10XY[110X,  [10Xkey(X)=key(Y)[110X  implies
+        [10Xfunc(X)=func(Y)[110X.  The  default simply returns a list of the arguments,
+        but  one  could  specify a different [10Xkey[110X function, perhaps in order to
+        reorder arguments or discard any that have no functional effect.[133X
+  
+  [30X    [33X[0;6Y[10Xstorekey[110X  - boolean specifying whether to store the key along with the
+        output  when a result is stored. If [10Xtrue[110X, the key will be checked when
+        recalling  a  previously computed value, to check for hash collisions.
+        If  [10Xfalse[110X,  two  keys will produce the same output whenever their [10Xhash[110X
+        values are the same. Default is [10Xfalse[110X.[133X
+  
+  [30X    [33X[0;6Y[10Xpickle[110X  -  function  that  converts the output of [10Xfunc[110X to a string for
+        storage.  Should be the inverse of [10Xunpickle[110X. If [10Xstorekey[110X is true, then
+        [10Xpickle[110X will also be used to store the key. Default is [10XIO_Pickle[110X, which
+        does not work for all objects.[133X
+  
+  [30X    [33X[0;6Y[10Xunpickle[110X  -  function  that  converts  a string back to an object when
+        retrieving  a  computed  value  from storage. Should be the inverse of
+        [10Xpickle[110X.  If  [10Xstorekey[110X  is  [10Xtrue[110X,  then  [10Xunpickle[110X  will also be used to
+        retrieve  the key. Default is [10XIO_Unpickle[110X, which does not work for all
+        objects.[133X
+  
+  [30X    [33X[0;6Y[10Xhash[110X  -  function  that takes a key and produces a string that will be
+        used  to  identify  that  key. If this function is not injective, then
+        [10Xstorekey[110X  can  be set to [10Xtrue[110X to check for hash collisions. The string
+        should  only  contain  characters  safe  for  filenames.  Default uses
+        [10XIO_Pickle[110X,  SHA-256 and base 64 encoding, which has an extremely small
+        chance of collision.[133X
+  
+  [30X    [33X[0;6Y[10Xunhash[110X  -  function that, if specified, should be the inverse of [10Xhash[110X.
+        If  this  is  specified,  keys will be unhashed after hashing, to make
+        sure  that  no  mistakes were made. This option, of course, only makes
+        sense if [10Xhash[110X is injective.[133X
+  
+  [30X    [33X[0;6Y[10Xmetadata[110X  -  function  that  takes  no  arguments and returns a string
+        containing  metadata  to  be  stored  with  the result currently being
+        written. This might include the current time, or some data identifying
+        the user or system that ran the computation.[133X
+  
+  [33X[0;0YA  function [10Xfunc[110X should only be memoised if it is [13Xpurely functional[113X. It does
+  not make sense to memoise a function if it has important side-effects, or if
+  its output does not depend solely on its inputs.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xtriple := x -> x * 3;[127X[104X
+    [4X[28Xfunction( x ) ... end[128X[104X
+    [4X[25Xgap>[125X [27Xmtriple := MemoisedFunction(triple);[127X[104X
+    [4X[28X<memoised function( x ) ... end>[128X[104X
+    [4X[25Xgap>[125X [27Xmtriple(3);[127X[104X
+    [4X[28X#I  Memo key: [ 3 ][128X[104X
+    [4X[28X#I  Key unknown.  Computing result...[128X[104X
+    [4X[28X9[128X[104X
+    [4X[25Xgap>[125X [27Xmtriple(3);[127X[104X
+    [4X[28X#I  Memo key: [ 3 ][128X[104X
+    [4X[28X#I  Key known!  Loading result from cache...[128X[104X
+    [4X[28X9[128X[104X
+  [4X[32X[104X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xmsize := MemoisedFunction(Size, rec(key := GeneratorsOfGroup,[127X[104X
+    [4X[25X>[125X [27X                                       storekey := true,[127X[104X
+    [4X[25X>[125X [27X                                       cache := "file://~/Desktop/mycache"));[127X[104X
+    [4X[28X<memoised <Attribute "Size">>[128X[104X
+    [4X[25Xgap>[125X [27Xmsize(SymmetricGroup(6));[127X[104X
+    [4X[28X#I  Memo key: [ (1,2,3,4,5,6), (1,2) ][128X[104X
+    [4X[28X#I  Key unknown.  Computing result...[128X[104X
+    [4X[28X720[128X[104X
+    [4X[25Xgap>[125X [27Xmsize(Group((5,6,1,2,3,4), (1,2)));[127X[104X
+    [4X[28X#I  Memo key: [ (1,2,3,4,5,6), (1,2) ][128X[104X
+    [4X[28X#I  Key known!  Loading result from cache...[128X[104X
+    [4X[28X720[128X[104X
+  [4X[32X[104X
+  
+  [1X2.1-2 IsMemoisedFunction[101X
+  
+  [33X[1;0Y[29X[2XIsMemoisedFunction[102X( [3Xarg[103X ) [32X filter[133X
+  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  
+  [33X[0;0YThis  category contains all memoised functions, special objects which wrap a
+  function  and  store  previously  computed  results  in  a  cache,  avoiding
+  recomputation wherever possible.[133X
+  
+  [33X[0;0YFor more information, and to create these objects, see [10XMemoisedFunction[110X.[133X
+  
+  [1X2.1-3 ClearMemoisedFunction[101X
+  
+  [33X[1;0Y[29X[2XClearMemoisedFunction[102X( [3Xmemo[103X ) [32X operation[133X
+  [6XReturns:[106X  [33X[0;10Ytrue or false[133X
+  
+  [33X[0;0YClear  all  known memoised results from the cache of this memoised function.
+  Return [10Xtrue[110X if the operation was successful, and [10Xfalse[110X otherwise.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xtriple := MemoisedFunction(x -> x*3,[127X[104X
+    [4X[25X>[125X [27X                              rec(storekey := true,[127X[104X
+    [4X[25X>[125X [27X                                  key := IdFunc,[127X[104X
+    [4X[25X>[125X [27X                                  hash := String,[127X[104X
+    [4X[25X>[125X [27X                                  funcname := "triple_any_number"));;[127X[104X
+    [4X[25Xgap>[125X [27XClearMemoisedFunction(triple);[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [1X2.1-4 InfoMemoisation[101X
+  
+  [33X[1;0Y[29X[2XInfoMemoisation[102X[32X info class[133X
+  
+  [33X[0;0YInfo class for the Memoisation package. Set this to the following levels for
+  different levels of information:[133X
+  
+  [30X    [33X[0;6Y0 - No messages[133X
+  
+  [30X    [33X[0;6Y1  -  Problems  only:  messages  describing  what  went wrong, with no
+        messages if an operation is successful[133X
+  
+  [30X    [33X[0;6Y2 - Progress: also shows step-by-step progress of operations[133X
+  
+  [30X    [33X[0;6Y3 - All: includes extra information such as attributes and backends[133X
+  
+  [33X[0;0YSet  this using, for example [10XSetInfoLevel(InfoMemoisation, 1)[110X. Default value
+  is 2.[133X
+  

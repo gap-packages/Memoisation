@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<title>GAP (Memoisation) - Chapter 3: Types of cache</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">overwriteStyle();</script>
+</head>
+<body class="chap3"  onload="jscontent()">
+
+
+<div class="chlinktop"><span class="chlink1">Goto Chapter: </span><a href="chap0_mj.html">Top</a>  <a href="chap1_mj.html">1</a>  <a href="chap2_mj.html">2</a>  <a href="chap3_mj.html">3</a>  <a href="chapInd_mj.html">Ind</a>  </div>
+
+<div class="chlinkprevnexttop">&nbsp;<a href="chap0_mj.html">[Top of Book]</a>&nbsp;  <a href="chap0_mj.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap2_mj.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chapInd_mj.html">[Next Chapter]</a>&nbsp;  </div>
+
+<p id="mathjaxlink" class="pcenter"><a href="chap3.html">[MathJax off]</a></p>
+<p><a id="X7A46C2A2798ED05E" name="X7A46C2A2798ED05E"></a></p>
+<div class="ChapSects"><a href="chap3_mj.html#X7A46C2A2798ED05E">3 <span class="Heading">Types of cache</span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3_mj.html#X7AE05C0578857310">3.1 <span class="Heading">Internals</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap3_mj.html#X83C7B030814C0945">3.1-1 MEMO_IsCache</a></span>
+</div></div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3_mj.html#X8167BA9A7BD11A02">3.2 <span class="Heading">Disk cache</span></a>
+</span>
+</div>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap3_mj.html#X7E142F6187FA0B9B">3.3 <span class="Heading">MongoDB cache</span></a>
+</span>
+</div>
+</div>
+
+<h3>3 <span class="Heading">Types of cache</span></h3>
+
+<p>A memoised function stores its results in a <em>cache</em>; that is, a backend that stores computed values, along with hashes of their keys. If appropriate, the key itself and any metadata will also be stored in the cache.</p>
+
+<p>Users can decide what type of cache they wish to use by specifying the <code class="code">cache</code> option to <code class="func">MemoisedFunction</code> (<a href="chap2_mj.html#X87ED7B4A7CF8B70C"><span class="RefLink">2.1-1</span></a>): a string starting with "file://" will create a disk cache (see Section <a href="chap3_mj.html#X8167BA9A7BD11A02"><span class="RefLink">3.2</span></a>), and a string starting with "mongodb://" will create a MongoDB cache (see Section <a href="chap3_mj.html#X7E142F6187FA0B9B"><span class="RefLink">3.3</span></a>).</p>
+
+<p><a id="X7AE05C0578857310" name="X7AE05C0578857310"></a></p>
+
+<h4>3.1 <span class="Heading">Internals</span></h4>
+
+<p>A user will generally not need to interact directly with the cache, which should be viewed as a backend to a memoised function. However, one can access the object directly by adding <code class="code">!.cache</code> to a memoised function.</p>
+
+<p><a id="X83C7B030814C0945" name="X83C7B030814C0945"></a></p>
+
+<h5>3.1-1 MEMO_IsCache</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; MEMO_IsCache</code>( <var class="Arg">arg</var> )</td><td class="tdright">(&nbsp;filter&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="code">true</code> or <code class="code">false</code></p>
+
+<p>Generic category for memoisation caches (backends).</p>
+
+<p>An object of this type is created automatically by <code class="func">MemoisedFunction</code> (<a href="chap2_mj.html#X87ED7B4A7CF8B70C"><span class="RefLink">2.1-1</span></a>), and is stored in the <code class="code">!.cache</code> component of the memoised function. A cache implements <code class="code">IsLookupDictionary</code>, and so entries can be manually added, searched, and looked up using <code class="code">AddDictionary</code>, <code class="code">KnowsDictionary</code> and <code class="code">LookupDictionary</code>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">memo := MemoisedFunction(x -&gt; x * x, rec(funcname := "square"));;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">memo!.cache;</span>
+&lt;lookup dictionary&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">MEMO_IsCache(memo!.cache);</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">AddDictionary(memo!.cache, 4, 16);</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">KnowsDictionary(memo!.cache, 4);</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">LookupDictionary(memo!.cache, 4);</span>
+16
+</pre></div>
+
+<p><a id="X8167BA9A7BD11A02" name="X8167BA9A7BD11A02"></a></p>
+
+<h4>3.2 <span class="Heading">Disk cache</span></h4>
+
+<p>The default type of cache is a <em>disk cache</em>. This cache saves and loads results at a specified location in the filesystem, and these files can be shared or edited by hand as desired.</p>
+
+<p>To create a disk cache, one should specify a <code class="code">cache</code> option beginning with "file://" to <code class="func">MemoisedFunction</code> (<a href="chap2_mj.html#X87ED7B4A7CF8B70C"><span class="RefLink">2.1-1</span></a>). The rest of the string after this prefix should be a path to a directory on the local filesystem. Memoised results will be stored inside this directory, inside a subdirectory named after the memoised function's <code class="code">funcname</code>.</p>
+
+<p>Consider the following example:</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ds := MemoisedFunction(DerivedSubgroup,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">               rec(cache := "file://results_for_alice/group_theory"));;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ds(Group((1,2,3,4), (1,2)));</span>
+Group([ (1,3,2), (1,4,3) ])
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">MEMO_IsDiskCache(ds!.cache);</span>
+true
+</pre></div>
+
+<p>This will create a file called <code class="code">HASH.out</code> in a subdirectory called <code class="code">results_for_alice/group_theory/DerivedSubgroup/</code> inside the local directory, where <code class="code">HASH</code> will be a hash of the key <code class="code">[ Group([ (1,3,2), (1,4,3) ]) ]</code>. The file will contain a pickled version of the function's output.</p>
+
+<p>To change the format of the filename, we could specify a different <code class="code">hash</code> option to <code class="func">MemoisedFunction</code> (<a href="chap2_mj.html#X87ED7B4A7CF8B70C"><span class="RefLink">2.1-1</span></a>). To change the format of the file contents, we could specify different <code class="code">pickle</code> and <code class="code">unpickle</code> options. This could make the files human-readable or readable by another system:</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">pow := MemoisedFunction(\^,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">               rec(funcname := "powers",</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                   cache := "file://arithmetic_results",</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                   hash := k -&gt; StringFormatted("{}_to_the_{}", k[1], k[2]),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                   pickle := z -&gt; StringFormatted("The answer is {}.", z),</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                   unpickle := str -&gt; Int(str{[15 .. Length(str)-1]})));;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">pow(2, 3);</span>
+8
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">pow(10, 5);; pow(1, 0);; pow(8, 4);;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">DirectoryContents("arithmetic_results/powers/");</span>
+[ ".", "..", "2_to_the_3.out", "10_to_the_5.out", "1_to_the_0.out",
+  "8_to_the_4.out" ]
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">StringFile("arithmetic_results/powers/10_to_the_5.out");</span>
+"The answer is 100000."
+</pre></div>
+
+<p>If <code class="code">storekey</code> is set to <code class="code">true</code>, then a corresponding <code class="code">HASH.key</code> file will be created, and if <code class="code">metadata</code> is specified, then a corresponding <code class="code">HASH.meta</code> file will also be created.</p>
+
+<p>By default, a memoised function will store its results in <code class="code">memo/</code> in the local directory.</p>
+
+<p><a id="X7E142F6187FA0B9B" name="X7E142F6187FA0B9B"></a></p>
+
+<h4>3.3 <span class="Heading">MongoDB cache</span></h4>
+
+<p>Instead of saving results to a local disk, we can instead save them to a MongoDB database, which may be hosted remotely.</p>
+
+<p>To create a MongoDB cache, one should specify a <code class="code">cache</code> option beginning with "mongodb://" to <code class="func">MemoisedFunction</code> (<a href="chap2_mj.html#X87ED7B4A7CF8B70C"><span class="RefLink">2.1-1</span></a>). The rest of the string after this prefix should be the URL of a server configured to handle <em>GAP Memoisation</em> or <em>pypersist</em> requests.</p>
+
+<p>The appropriate files to configure such a server are located in the <code class="code">mongodb_server</code> directory inside this package. Navigate into that directory and run <code class="code">python3 run.py</code> to start a local server (the <em>MongoDB</em> service and the <em>eve</em> python package should both be installed). This server can then be accessed locally using <code class="code">cache := "mongodb://localhost:5000/persist"</code>.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">quintuple := x -&gt; x * 5;;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mq := MemoisedFunction(quintuple, </span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">               rec(cache := "mongodb://localhost:5000/persist"));</span>
+&lt;memoised function( x ) ... end&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mq(101);</span>
+505
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mq(101);</span>
+505
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ClearMemoisedFunction(mq);</span>
+true
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">MEMO_IsMongoDBCache(mq!.cache);</span>
+true
+</pre></div>
+
+<p>To see details of the requests sent to and from the server, set <code class="code">InfoMemoisation</code> to at least 3.</p>
+
+<p>Using a remote server, multiple users can interact with the same database at once, sharing results between them. The same servers can be reached by <em>pypersist</em> to store cached Python results. By default, results from GAP will be stored using the "gapmemo" namespace, and thus kept separate from pypersist results. However, if one wishes to share results with a functionally similar pypersist function, one can change the value of <code class="code">MEMO_MongoDBNamespace</code> to "pypersist" to gain access to the same results.</p>
+
+
+<div class="chlinkprevnextbot">&nbsp;<a href="chap0_mj.html">[Top of Book]</a>&nbsp;  <a href="chap0_mj.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap2_mj.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chapInd_mj.html">[Next Chapter]</a>&nbsp;  </div>
+
+
+<div class="chlinkbot"><span class="chlink1">Goto Chapter: </span><a href="chap0_mj.html">Top</a>  <a href="chap1_mj.html">1</a>  <a href="chap2_mj.html">2</a>  <a href="chap3_mj.html">3</a>  <a href="chapInd_mj.html">Ind</a>  </div>
+
+<hr />
+<p class="foot">generated by <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>

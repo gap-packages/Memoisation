@@ -1,0 +1,146 @@
+  
+  [1X3 [33X[0;0YTypes of cache[133X[101X
+  
+  [33X[0;0YA  memoised  function stores its results in a [13Xcache[113X; that is, a backend that
+  stores computed values, along with hashes of their keys. If appropriate, the
+  key itself and any metadata will also be stored in the cache.[133X
+  
+  [33X[0;0YUsers can decide what type of cache they wish to use by specifying the [10Xcache[110X
+  option  to  [2XMemoisedFunction[102X  ([14X2.1-1[114X): a string starting with "file://" will
+  create  a  disk  cache  (see  Section  [14X3.2[114X),  and  a  string  starting  with
+  "mongodb://" will create a MongoDB cache (see Section [14X3.3[114X).[133X
+  
+  
+  [1X3.1 [33X[0;0YInternals[133X[101X
+  
+  [33X[0;0YA  user  will  generally not need to interact directly with the cache, which
+  should  be  viewed  as  a  backend  to a memoised function. However, one can
+  access the object directly by adding [10X!.cache[110X to a memoised function.[133X
+  
+  [1X3.1-1 MEMO_IsCache[101X
+  
+  [33X[1;0Y[29X[2XMEMO_IsCache[102X( [3Xarg[103X ) [32X filter[133X
+  [6XReturns:[106X  [33X[0;10Y[10Xtrue[110X or [10Xfalse[110X[133X
+  
+  [33X[0;0YGeneric category for memoisation caches (backends).[133X
+  
+  [33X[0;0YAn object of this type is created automatically by [2XMemoisedFunction[102X ([14X2.1-1[114X),
+  and  is  stored  in  the [10X!.cache[110X component of the memoised function. A cache
+  implements  [10XIsLookupDictionary[110X,  and  so  entries  can  be  manually  added,
+  searched,   and   looked   up   using   [10XAddDictionary[110X,  [10XKnowsDictionary[110X  and
+  [10XLookupDictionary[110X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xmemo := MemoisedFunction(x -> x * x, rec(funcname := "square"));;[127X[104X
+    [4X[25Xgap>[125X [27Xmemo!.cache;[127X[104X
+    [4X[28X<lookup dictionary>[128X[104X
+    [4X[25Xgap>[125X [27XMEMO_IsCache(memo!.cache);[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XAddDictionary(memo!.cache, 4, 16);[127X[104X
+    [4X[25Xgap>[125X [27XKnowsDictionary(memo!.cache, 4);[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XLookupDictionary(memo!.cache, 4);[127X[104X
+    [4X[28X16[128X[104X
+  [4X[32X[104X
+  
+  
+  [1X3.2 [33X[0;0YDisk cache[133X[101X
+  
+  [33X[0;0YThe  default  type  of  cache  is  a  [13Xdisk cache[113X. This cache saves and loads
+  results  at  a  specified location in the filesystem, and these files can be
+  shared or edited by hand as desired.[133X
+  
+  [33X[0;0YTo  create  a  disk  cache, one should specify a [10Xcache[110X option beginning with
+  "file://"  to  [2XMemoisedFunction[102X  ([14X2.1-1[114X).  The rest of the string after this
+  prefix  should  be  a  path to a directory on the local filesystem. Memoised
+  results  will  be  stored inside this directory, inside a subdirectory named
+  after the memoised function's [10Xfuncname[110X.[133X
+  
+  [33X[0;0YConsider the following example:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xds := MemoisedFunction(DerivedSubgroup,[127X[104X
+    [4X[25X>[125X [27X               rec(cache := "file://results_for_alice/group_theory"));;[127X[104X
+    [4X[25Xgap>[125X [27Xds(Group((1,2,3,4), (1,2)));[127X[104X
+    [4X[28XGroup([ (1,3,2), (1,4,3) ])[128X[104X
+    [4X[25Xgap>[125X [27XMEMO_IsDiskCache(ds!.cache);[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThis   will   create  a  file  called  [10XHASH.out[110X  in  a  subdirectory  called
+  [10Xresults_for_alice/group_theory/DerivedSubgroup/[110X  inside the local directory,
+  where  [10XHASH[110X  will  be a hash of the key [10X[ Group([ (1,3,2), (1,4,3) ]) ][110X. The
+  file will contain a pickled version of the function's output.[133X
+  
+  [33X[0;0YTo  change  the  format  of  the filename, we could specify a different [10Xhash[110X
+  option  to  [2XMemoisedFunction[102X  ([14X2.1-1[114X).  To  change  the  format  of the file
+  contents, we could specify different [10Xpickle[110X and [10Xunpickle[110X options. This could
+  make the files human-readable or readable by another system:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xpow := MemoisedFunction(\^,[127X[104X
+    [4X[25X>[125X [27X               rec(funcname := "powers",[127X[104X
+    [4X[25X>[125X [27X                   cache := "file://arithmetic_results",[127X[104X
+    [4X[25X>[125X [27X                   hash := k -> StringFormatted("{}_to_the_{}", k[1], k[2]),[127X[104X
+    [4X[25X>[125X [27X                   pickle := z -> StringFormatted("The answer is {}.", z),[127X[104X
+    [4X[25X>[125X [27X                   unpickle := str -> Int(str{[15 .. Length(str)-1]})));;[127X[104X
+    [4X[25Xgap>[125X [27Xpow(2, 3);[127X[104X
+    [4X[28X8[128X[104X
+    [4X[25Xgap>[125X [27Xpow(10, 5);; pow(1, 0);; pow(8, 4);;[127X[104X
+    [4X[25Xgap>[125X [27XDirectoryContents("arithmetic_results/powers/");[127X[104X
+    [4X[28X[ ".", "..", "2_to_the_3.out", "10_to_the_5.out", "1_to_the_0.out",[128X[104X
+    [4X[28X  "8_to_the_4.out" ][128X[104X
+    [4X[25Xgap>[125X [27XStringFile("arithmetic_results/powers/10_to_the_5.out");[127X[104X
+    [4X[28X"The answer is 100000."[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YIf  [10Xstorekey[110X  is  set  to  [10Xtrue[110X,  then a corresponding [10XHASH.key[110X file will be
+  created,  and  if [10Xmetadata[110X is specified, then a corresponding [10XHASH.meta[110X file
+  will also be created.[133X
+  
+  [33X[0;0YBy default, a memoised function will store its results in [10Xmemo/[110X in the local
+  directory.[133X
+  
+  
+  [1X3.3 [33X[0;0YMongoDB cache[133X[101X
+  
+  [33X[0;0YInstead  of  saving  results  to a local disk, we can instead save them to a
+  MongoDB database, which may be hosted remotely.[133X
+  
+  [33X[0;0YTo  create a MongoDB cache, one should specify a [10Xcache[110X option beginning with
+  "mongodb://"  to [2XMemoisedFunction[102X ([14X2.1-1[114X). The rest of the string after this
+  prefix should be the URL of a server configured to handle [13XGAP Memoisation[113X or
+  [13Xpypersist[113X requests.[133X
+  
+  [33X[0;0YThe  appropriate  files  to  configure  such  a  server  are  located in the
+  [10Xmongodb_server[110X  directory  inside this package. Navigate into that directory
+  and  run [10Xpython3 run.py[110X to start a local server (the [13XMongoDB[113X service and the
+  [13Xeve[113X  python  package  should  both  be  installed).  This server can then be
+  accessed locally using [10Xcache := "mongodb://localhost:5000/persist"[110X.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xquintuple := x -> x * 5;;[127X[104X
+    [4X[25Xgap>[125X [27Xmq := MemoisedFunction(quintuple, [127X[104X
+    [4X[25X>[125X [27X               rec(cache := "mongodb://localhost:5000/persist"));[127X[104X
+    [4X[28X<memoised function( x ) ... end>[128X[104X
+    [4X[25Xgap>[125X [27Xmq(101);[127X[104X
+    [4X[28X505[128X[104X
+    [4X[25Xgap>[125X [27Xmq(101);[127X[104X
+    [4X[28X505[128X[104X
+    [4X[25Xgap>[125X [27XClearMemoisedFunction(mq);[127X[104X
+    [4X[28Xtrue[128X[104X
+    [4X[25Xgap>[125X [27XMEMO_IsMongoDBCache(mq!.cache);[127X[104X
+    [4X[28Xtrue[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YTo   see  details  of  the  requests  sent  to  and  from  the  server,  set
+  [10XInfoMemoisation[110X to at least 3.[133X
+  
+  [33X[0;0YUsing a remote server, multiple users can interact with the same database at
+  once,  sharing  results  between  them.  The  same servers can be reached by
+  [13Xpypersist[113X  to store cached Python results. By default, results from GAP will
+  be  stored  using  the  "gapmemo"  namespace,  and  thus  kept separate from
+  pypersist   results.  However,  if  one  wishes  to  share  results  with  a
+  functionally  similar  pypersist  function,  one  can  change  the  value of
+  [10XMEMO_MongoDBNamespace[110X to "pypersist" to gain access to the same results.[133X
+  

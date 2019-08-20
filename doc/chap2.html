@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<title>GAP (Memoisation) - Chapter 2: Commands</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">overwriteStyle();</script>
+</head>
+<body class="chap2"  onload="jscontent()">
+
+
+<div class="chlinktop"><span class="chlink1">Goto Chapter: </span><a href="chap0.html">Top</a>  <a href="chap1.html">1</a>  <a href="chap2.html">2</a>  <a href="chap3.html">3</a>  <a href="chapInd.html">Ind</a>  </div>
+
+<div class="chlinkprevnexttop">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap1.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap3.html">[Next Chapter]</a>&nbsp;  </div>
+
+<p id="mathjaxlink" class="pcenter"><a href="chap2_mj.html">[MathJax on]</a></p>
+<p><a id="X845671BB7CE6C298" name="X845671BB7CE6C298"></a></p>
+<div class="ChapSects"><a href="chap2.html#X845671BB7CE6C298">2 <span class="Heading">Commands</span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap2.html#X7D0F00717A483AF7">2.1 <span class="Heading">Memoised functions</span></a>
+</span>
+<div class="ContSSBlock">
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X87ED7B4A7CF8B70C">2.1-1 MemoisedFunction</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X854689BF859FC2A1">2.1-2 IsMemoisedFunction</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X868FD54983B7C478">2.1-3 ClearMemoisedFunction</a></span>
+<span class="ContSS"><br /><span class="nocss">&nbsp;&nbsp;</span><a href="chap2.html#X862B20817AC0B530">2.1-4 InfoMemoisation</a></span>
+</div></div>
+</div>
+
+<h3>2 <span class="Heading">Commands</span></h3>
+
+<p><a id="X7D0F00717A483AF7" name="X7D0F00717A483AF7"></a></p>
+
+<h4>2.1 <span class="Heading">Memoised functions</span></h4>
+
+<p><a id="X87ED7B4A7CF8B70C" name="X87ED7B4A7CF8B70C"></a></p>
+
+<h5>2.1-1 MemoisedFunction</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; MemoisedFunction</code>( <var class="Arg">func</var>[, <var class="Arg">opts</var>] )</td><td class="tdright">(&nbsp;function&nbsp;)</td></tr></table></div>
+<p>Return a special function object in the category <code class="code">IsMemoisedFunction</code>. This will be functionally the same as <code class="code">func</code>, but using persistent memoisation to store and retrieve results from a cache.</p>
+
+<p>If the optional argument <code class="code">opts</code> is specified, it should be a record of options that customise how this memoisation is done. The following options are supported:</p>
+
+
+<ul>
+<li><p><code class="code">cache</code> - string that starts with either "file://" or "mongodb://". This prefix determines which type of cache backend is used: files on the local disk or a MongoDB server. The rest of the string should be a path to the directory of the disk cache, or a URL for the MongoDB server. Default is "file://memo/", storing results in a directory called "memo" inside the current directory.</p>
+
+</li>
+<li><p><code class="code">funcname</code> - string that will be used to uniquely describe this function, among all functions being stored in the present <code class="code">cache</code>. If two functions have the same <code class="code">cache</code> and the same <code class="code">funcname</code>, they will save and load each others' cached results. If <code class="code">NameFunction(func)</code> is "unknown", (e.g. if <code class="code">func</code> was only defined inside this call to <code class="code">MemoisedFunction</code>) then specifying a <code class="code">funcname</code> is mandatory; otherwise, <code class="code">NameFunction(func)</code> will be used by default.</p>
+
+</li>
+<li><p><code class="code">key</code> - function that takes the same arguments as <code class="code">func</code> and returns some object (known as a <em>key</em>). The <code class="code">key</code> function should be chosen such that, for two sets of arguments <code class="code">X</code> and <code class="code">Y</code>, <code class="code">key(X)=key(Y)</code> implies <code class="code">func(X)=func(Y)</code>. The default simply returns a list of the arguments, but one could specify a different <code class="code">key</code> function, perhaps in order to reorder arguments or discard any that have no functional effect.</p>
+
+</li>
+<li><p><code class="code">storekey</code> - boolean specifying whether to store the key along with the output when a result is stored. If <code class="code">true</code>, the key will be checked when recalling a previously computed value, to check for hash collisions. If <code class="code">false</code>, two keys will produce the same output whenever their <code class="code">hash</code> values are the same. Default is <code class="code">false</code>.</p>
+
+</li>
+<li><p><code class="code">pickle</code> - function that converts the output of <code class="code">func</code> to a string for storage. Should be the inverse of <code class="code">unpickle</code>. If <code class="code">storekey</code> is true, then <code class="code">pickle</code> will also be used to store the key. Default is <code class="code">IO_Pickle</code>, which does not work for all objects.</p>
+
+</li>
+<li><p><code class="code">unpickle</code> - function that converts a string back to an object when retrieving a computed value from storage. Should be the inverse of <code class="code">pickle</code>. If <code class="code">storekey</code> is <code class="code">true</code>, then <code class="code">unpickle</code> will also be used to retrieve the key. Default is <code class="code">IO_Unpickle</code>, which does not work for all objects.</p>
+
+</li>
+<li><p><code class="code">hash</code> - function that takes a key and produces a string that will be used to identify that key. If this function is not injective, then <code class="code">storekey</code> can be set to <code class="code">true</code> to check for hash collisions. The string should only contain characters safe for filenames. Default uses <code class="code">IO_Pickle</code>, SHA-256 and base 64 encoding, which has an extremely small chance of collision.</p>
+
+</li>
+<li><p><code class="code">unhash</code> - function that, if specified, should be the inverse of <code class="code">hash</code>. If this is specified, keys will be unhashed after hashing, to make sure that no mistakes were made. This option, of course, only makes sense if <code class="code">hash</code> is injective.</p>
+
+</li>
+<li><p><code class="code">metadata</code> - function that takes no arguments and returns a string containing metadata to be stored with the result currently being written. This might include the current time, or some data identifying the user or system that ran the computation.</p>
+
+</li>
+</ul>
+<p>A function <code class="code">func</code> should only be memoised if it is <em>purely functional</em>. It does not make sense to memoise a function if it has important side-effects, or if its output does not depend solely on its inputs.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">triple := x -&gt; x * 3;</span>
+function( x ) ... end
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mtriple := MemoisedFunction(triple);</span>
+&lt;memoised function( x ) ... end&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mtriple(3);</span>
+#I  Memo key: [ 3 ]
+#I  Key unknown.  Computing result...
+9
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mtriple(3);</span>
+#I  Memo key: [ 3 ]
+#I  Key known!  Loading result from cache...
+9
+</pre></div>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">msize := MemoisedFunction(Size, rec(key := GeneratorsOfGroup,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                       storekey := true,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                       cache := "file://~/Desktop/mycache"));</span>
+&lt;memoised &lt;Attribute "Size"&gt;&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">msize(SymmetricGroup(6));</span>
+#I  Memo key: [ (1,2,3,4,5,6), (1,2) ]
+#I  Key unknown.  Computing result...
+720
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">msize(Group((5,6,1,2,3,4), (1,2)));</span>
+#I  Memo key: [ (1,2,3,4,5,6), (1,2) ]
+#I  Key known!  Loading result from cache...
+720
+</pre></div>
+
+<p><a id="X854689BF859FC2A1" name="X854689BF859FC2A1"></a></p>
+
+<h5>2.1-2 IsMemoisedFunction</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; IsMemoisedFunction</code>( <var class="Arg">arg</var> )</td><td class="tdright">(&nbsp;filter&nbsp;)</td></tr></table></div>
+<p>Returns: <code class="code">true</code> or <code class="code">false</code></p>
+
+<p>This category contains all memoised functions, special objects which wrap a function and store previously computed results in a cache, avoiding recomputation wherever possible.</p>
+
+<p>For more information, and to create these objects, see <code class="code">MemoisedFunction</code>.</p>
+
+<p><a id="X868FD54983B7C478" name="X868FD54983B7C478"></a></p>
+
+<h5>2.1-3 ClearMemoisedFunction</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; ClearMemoisedFunction</code>( <var class="Arg">memo</var> )</td><td class="tdright">(&nbsp;operation&nbsp;)</td></tr></table></div>
+<p>Returns: true or false</p>
+
+<p>Clear all known memoised results from the cache of this memoised function. Return <code class="code">true</code> if the operation was successful, and <code class="code">false</code> otherwise.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">triple := MemoisedFunction(x -&gt; x*3,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                              rec(storekey := true,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                  key := IdFunc,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                  hash := String,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                  funcname := "triple_any_number"));;</span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">ClearMemoisedFunction(triple);</span>
+true
+</pre></div>
+
+<p><a id="X862B20817AC0B530" name="X862B20817AC0B530"></a></p>
+
+<h5>2.1-4 InfoMemoisation</h5>
+
+<div class="func"><table class="func" width="100%"><tr><td class="tdleft"><code class="func">&#8227; InfoMemoisation</code></td><td class="tdright">(&nbsp;info class&nbsp;)</td></tr></table></div>
+<p>Info class for the Memoisation package. Set this to the following levels for different levels of information:</p>
+
+
+<ul>
+<li><p>0 - No messages</p>
+
+</li>
+<li><p>1 - Problems only: messages describing what went wrong, with no messages if an operation is successful</p>
+
+</li>
+<li><p>2 - Progress: also shows step-by-step progress of operations</p>
+
+</li>
+<li><p>3 - All: includes extra information such as attributes and backends</p>
+
+</li>
+</ul>
+<p>Set this using, for example <code class="code">SetInfoLevel(InfoMemoisation, 1)</code>. Default value is 2.</p>
+
+
+<div class="chlinkprevnextbot">&nbsp;<a href="chap0.html">[Top of Book]</a>&nbsp;  <a href="chap0.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap1.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap3.html">[Next Chapter]</a>&nbsp;  </div>
+
+
+<div class="chlinkbot"><span class="chlink1">Goto Chapter: </span><a href="chap0.html">Top</a>  <a href="chap1.html">1</a>  <a href="chap2.html">2</a>  <a href="chap3.html">3</a>  <a href="chapInd.html">Ind</a>  </div>
+
+<hr />
+<p class="foot">generated by <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>

@@ -1,0 +1,54 @@
+  
+  [1X1 [33X[0;0YIntroduction[133X[101X
+  
+  [33X[0;0YThis  package  provides  [13Xmemoised  functions[113X.  A  memoised function wraps an
+  ordinary GAP function, and caches its outputs so that they do not need to be
+  computed  again  later.  This  cache  is  stored  in a permanent format that
+  persists between different GAP sessions, different users, and even different
+  locations.  It  is  also  compatible  with the [13Xpypersist[113X library for Python,
+  allowing results to be shared between GAP and Python or Sage.[133X
+  
+  
+  [1X1.1 [33X[0;0YA quick example[133X[101X
+  
+  [33X[0;0YThe  following  example  shows  a  simple use of [2XMemoisedFunction[102X ([14X2.1-1[114X) to
+  begin caching the results of a function to disk.[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xtriple := x -> x * 3;[127X[104X
+    [4X[28Xfunction( x ) ... end[128X[104X
+    [4X[25Xgap>[125X [27Xmtriple := MemoisedFunction(triple);[127X[104X
+    [4X[28X<memoised function( x ) ... end>[128X[104X
+    [4X[25Xgap>[125X [27Xmtriple(3);[127X[104X
+    [4X[28X#I  Memo key: [ 3 ][128X[104X
+    [4X[28X#I  Key unknown.  Computing result...[128X[104X
+    [4X[28X9[128X[104X
+    [4X[25Xgap>[125X [27Xmtriple(3);[127X[104X
+    [4X[28X#I  Memo key: [ 3 ][128X[104X
+    [4X[28X#I  Key known!  Loading result from cache...[128X[104X
+    [4X[28X9[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YThe  memoised function [10Xmtriple[110X behaves just like the function [10Xtriple[110X that it
+  wraps, but if the same call is repeated, its result is loaded from the cache
+  instead of being recomputed. This cache even persists across sessions![133X
+  
+  [33X[0;0YAdditional options can be specified, as shown here:[133X
+  
+  [4X[32X  Example  [32X[104X
+    [4X[25Xgap>[125X [27Xmsize := MemoisedFunction(Size, rec(key := GeneratorsOfGroup,[127X[104X
+    [4X[25X>[125X [27X                                       storekey := true,[127X[104X
+    [4X[25X>[125X [27X                                       cache := "file://~/Desktop/mycache"));[127X[104X
+    [4X[28X<memoised <Attribute "Size">>[128X[104X
+    [4X[25Xgap>[125X [27Xmsize(SymmetricGroup(6));[127X[104X
+    [4X[28X#I  Memo key: [ (1,2,3,4,5,6), (1,2) ][128X[104X
+    [4X[28X#I  Key unknown.  Computing result...[128X[104X
+    [4X[28X720[128X[104X
+    [4X[25Xgap>[125X [27Xmsize(Group((5,6,1,2,3,4), (1,2)));[127X[104X
+    [4X[28X#I  Memo key: [ (1,2,3,4,5,6), (1,2) ][128X[104X
+    [4X[28X#I  Key known!  Loading result from cache...[128X[104X
+    [4X[28X720[128X[104X
+  [4X[32X[104X
+  
+  [33X[0;0YAll these options are explained in the next chapter.[133X
+  

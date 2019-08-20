@@ -12,6 +12,7 @@ PackageName := "Memoisation",
 Subtitle := "Shared persistent memoisation library for GAP and other systems",
 Version := "0.1",
 Date := "06/08/2018", # dd/mm/yyyy format
+License := "BSD-3-Clause",
 
 Persons := [
   rec(
@@ -19,15 +20,20 @@ Persons := [
     IsMaintainer := true,
     FirstNames := "Michael",
     LastName := "Torpey",
-    WWWHome := "http://www-groups.mcs.st-andrews.ac.uk/~mct25/",
+    WWWHome := "https://mtorpey.github.io/",
     Email := "mct25@st-andrews.ac.uk",
-    PostalAddress := "TODO",
+    PostalAddress := Concatenation(
+               "School of Computer Science\n",
+               "University of St Andrews\n",
+               "Jack Cole Building, North Haugh\n",
+               "St Andrews, Fife, KY16 9SX\n",
+               "United Kingdom" ),
     Place := "St Andrews",
     Institution := "University of St Andrews",
   ),
   rec(
     IsAuthor := true,
-    IsMaintainer := true,
+    IsMaintainer := false,
     FirstNames := "Markus",
     LastName := "Pfeiffer",
     WWWHome := "https://markusp.morphism.de/",
@@ -81,7 +87,11 @@ PackageDoc := rec(
 
 Dependencies := rec(
   GAP := ">= 4.9",
-  NeededOtherPackages := [ [ "GAPDoc", ">= 1.6.1" ] ],
+  NeededOtherPackages := [ [ "GAPDoc", ">= 1.6.1" ],
+                           [ "curlInterface", ">= 1.0.1" ],
+                           [ "io", ">= 4.0" ],
+                           [ "json", ">= 2.0" ],
+                           [ "crypting", ">= 0.8" ] ],
   SuggestedOtherPackages := [ ],
   ExternalConditions := [ ],
 ),

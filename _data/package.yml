@@ -6,15 +6,13 @@ description: |
 
 authors:
     - name: Michael Torpey
-      url: http://www-groups.mcs.st-andrews.ac.uk/~mct25/
+      url: https://mtorpey.github.io/
     - name: Markus Pfeiffer
       url: https://markusp.morphism.de/
 
 maintainers:
     - name: Michael Torpey
-      url: http://www-groups.mcs.st-andrews.ac.uk/~mct25/
-    - name: Markus Pfeiffer
-      url: https://markusp.morphism.de/
+      url: https://mtorpey.github.io/
 
 GAP: ">= 4.9"
 
@@ -22,6 +20,18 @@ needed-pkgs:
     - name: "GAPDoc"
       version: ">= 1.6.1"
       url: "http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc"
+    - name: "curlInterface"
+      version: ">= 1.0.1"
+      url: "https://gap-packages.github.io/curlInterface/"
+    - name: "io"
+      version: ">= 4.0"
+      url: "https://gap-packages.github.io/io"
+    - name: "json"
+      version: ">= 2.0"
+      url: "https://gap-packages.github.io/json/"
+    - name: "crypting"
+      version: ">= 0.8"
+      url: "https://gap-packages.github.io/crypting/"
 
 www: https://gap-packages.github.io/Memoisation/
 readme: README.md
@@ -54,7 +64,8 @@ bibtex: |
       month =            {Aug},
       year =             {2018},
       note =             {GAP package},
-      howpublished =     {\href {https://gap-packages.github.io/Memoisation/} {\texttt{https://gap-packages.github.io/}\discretionary {}{}{}\texttt{Memoisation/}}},
+      howpublished =     {\href   {https://gap-packages.github.io/Memoisation/}  {\texttt{https://gap-packages.github.io/}\discretionary
+                          {}{}{}\texttt{Memoisation/}}},
       printedkey =       {TP18}
     }
 

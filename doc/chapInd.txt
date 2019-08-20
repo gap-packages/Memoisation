@@ -1,0 +1,12 @@
+  
+  
+  [1XIndex[101X
+  
+  [2XClearMemoisedFunction[102X, for IsMemoisedFunction 2.1-3 
+  [2XInfoMemoisation[102X 2.1-4 
+  [2XIsMemoisedFunction[102X, for IsFunction 2.1-2 
+  [2XMEMO_IsCache[102X, for IsLookupDictionary 3.1-1 
+  [2XMemoisedFunction[102X 2.1-1 
+  
+  
+  -------------------------------------------------------

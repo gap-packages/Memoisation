@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<title>GAP (Memoisation) - Chapter 1: Introduction</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="GAPDoc2HTML" />
+<link rel="stylesheet" type="text/css" href="manual.css" />
+<script src="manual.js" type="text/javascript"></script>
+<script type="text/javascript">overwriteStyle();</script>
+</head>
+<body class="chap1"  onload="jscontent()">
+
+
+<div class="chlinktop"><span class="chlink1">Goto Chapter: </span><a href="chap0_mj.html">Top</a>  <a href="chap1_mj.html">1</a>  <a href="chap2_mj.html">2</a>  <a href="chap3_mj.html">3</a>  <a href="chapInd_mj.html">Ind</a>  </div>
+
+<div class="chlinkprevnexttop">&nbsp;<a href="chap0_mj.html">[Top of Book]</a>&nbsp;  <a href="chap0_mj.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap0_mj.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap2_mj.html">[Next Chapter]</a>&nbsp;  </div>
+
+<p id="mathjaxlink" class="pcenter"><a href="chap1.html">[MathJax off]</a></p>
+<p><a id="X7DFB63A97E67C0A1" name="X7DFB63A97E67C0A1"></a></p>
+<div class="ChapSects"><a href="chap1_mj.html#X7DFB63A97E67C0A1">1 <span class="Heading">Introduction</span></a>
+<div class="ContSect"><span class="tocline"><span class="nocss">&nbsp;</span><a href="chap1_mj.html#X8195CF9E84431EB8">1.1 <span class="Heading">A quick example</span></a>
+</span>
+</div>
+</div>
+
+<h3>1 <span class="Heading">Introduction</span></h3>
+
+<p>This package provides <em>memoised functions</em>. A memoised function wraps an ordinary GAP function, and caches its outputs so that they do not need to be computed again later. This cache is stored in a permanent format that persists between different GAP sessions, different users, and even different locations. It is also compatible with the <em>pypersist</em> library for Python, allowing results to be shared between GAP and Python or Sage.</p>
+
+<p><a id="X8195CF9E84431EB8" name="X8195CF9E84431EB8"></a></p>
+
+<h4>1.1 <span class="Heading">A quick example</span></h4>
+
+<p>The following example shows a simple use of <code class="func">MemoisedFunction</code> (<a href="chap2_mj.html#X87ED7B4A7CF8B70C"><span class="RefLink">2.1-1</span></a>) to begin caching the results of a function to disk.</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">triple := x -&gt; x * 3;</span>
+function( x ) ... end
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mtriple := MemoisedFunction(triple);</span>
+&lt;memoised function( x ) ... end&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mtriple(3);</span>
+#I  Memo key: [ 3 ]
+#I  Key unknown.  Computing result...
+9
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mtriple(3);</span>
+#I  Memo key: [ 3 ]
+#I  Key known!  Loading result from cache...
+9
+</pre></div>
+
+<p>The memoised function <code class="code">mtriple</code> behaves just like the function <code class="code">triple</code> that it wraps, but if the same call is repeated, its result is loaded from the cache instead of being recomputed. This cache even persists across sessions!</p>
+
+<p>Additional options can be specified, as shown here:</p>
+
+
+<div class="example"><pre>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">msize := MemoisedFunction(Size, rec(key := GeneratorsOfGroup,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                       storekey := true,</span>
+<span class="GAPprompt">&gt;</span> <span class="GAPinput">                                       cache := "file://~/Desktop/mycache"));</span>
+&lt;memoised &lt;Attribute "Size"&gt;&gt;
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">msize(SymmetricGroup(6));</span>
+#I  Memo key: [ (1,2,3,4,5,6), (1,2) ]
+#I  Key unknown.  Computing result...
+720
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">msize(Group((5,6,1,2,3,4), (1,2)));</span>
+#I  Memo key: [ (1,2,3,4,5,6), (1,2) ]
+#I  Key known!  Loading result from cache...
+720
+</pre></div>
+
+<p>All these options are explained in the next chapter.</p>
+
+
+<div class="chlinkprevnextbot">&nbsp;<a href="chap0_mj.html">[Top of Book]</a>&nbsp;  <a href="chap0_mj.html#contents">[Contents]</a>&nbsp;  &nbsp;<a href="chap0_mj.html">[Previous Chapter]</a>&nbsp;  &nbsp;<a href="chap2_mj.html">[Next Chapter]</a>&nbsp;  </div>
+
+
+<div class="chlinkbot"><span class="chlink1">Goto Chapter: </span><a href="chap0_mj.html">Top</a>  <a href="chap1_mj.html">1</a>  <a href="chap2_mj.html">2</a>  <a href="chap3_mj.html">3</a>  <a href="chapInd_mj.html">Ind</a>  </div>
+
+<hr />
+<p class="foot">generated by <a href="http://www.math.rwth-aachen.de/~Frank.Luebeck/GAPDoc">GAPDoc2HTML</a></p>
+</body>
+</html>
