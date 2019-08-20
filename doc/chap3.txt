@@ -120,7 +120,7 @@
   
   [4X[32X  Example  [32X[104X
     [4X[25Xgap>[125X [27Xquintuple := x -> x * 5;;[127X[104X
-    [4X[25Xgap>[125X [27Xmq := MemoisedFunction(quintuple, [127X[104X
+    [4X[25Xgap>[125X [27Xmq := MemoisedFunction(quintuple,[127X[104X
     [4X[25X>[125X [27X               rec(cache := "mongodb://localhost:5000/persist"));[127X[104X
     [4X[28X<memoised function( x ) ... end>[128X[104X
     [4X[25Xgap>[125X [27Xmq(101);[127X[104X

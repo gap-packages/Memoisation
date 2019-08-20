@@ -131,7 +131,7 @@ true
 
 <div class="example"><pre>
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">quintuple := x -&gt; x * 5;;</span>
-<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mq := MemoisedFunction(quintuple, </span>
+<span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mq := MemoisedFunction(quintuple,</span>
 <span class="GAPprompt">&gt;</span> <span class="GAPinput">               rec(cache := "mongodb://localhost:5000/persist"));</span>
 &lt;memoised function( x ) ... end&gt;
 <span class="GAPprompt">gap&gt;</span> <span class="GAPinput">mq(101);</span>

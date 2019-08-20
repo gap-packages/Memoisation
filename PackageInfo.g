@@ -10,8 +10,8 @@ SetPackageInfo( rec(
 
 PackageName := "Memoisation",
 Subtitle := "Shared persistent memoisation library for GAP and other systems",
-Version := "0.1",
-Date := "06/08/2018", # dd/mm/yyyy format
+Version := "0.8",
+Date := "20/08/2019", # dd/mm/yyyy format
 License := "BSD-3-Clause",
 
 Persons := [
@@ -88,7 +88,7 @@ PackageDoc := rec(
 Dependencies := rec(
   GAP := ">= 4.9",
   NeededOtherPackages := [ [ "GAPDoc", ">= 1.6.1" ],
-                           [ "curlInterface", ">= 1.0.1" ],
+                           [ "curlInterface", ">= 2.1" ],
                            [ "io", ">= 4.0" ],
                            [ "json", ">= 2.0" ],
                            [ "crypting", ">= 0.8" ] ],
@@ -105,5 +105,3 @@ TestFile := "tst/testall.g",
 #Keywords := [ "TODO" ],
 
 ));
-
-
