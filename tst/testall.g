@@ -26,9 +26,15 @@ compareFunction := function(expected, found)
   return expected = found;
 end;
 
+# Any files to exclude?
+if not IsBound(MEMO_ExcludeTestFiles) then
+  MEMO_ExcludeTestFiles := [];
+fi;
+
 TestDirectory(DirectoriesPackageLibrary( "Memoisation", "tst" ),
               rec(exitGAP := true,
                   rewriteToFile := false,
+                  exclude := MEMO_ExcludeTestFiles,
                   testOptions := rec(compareFunction := compareFunction)));
 
 FORCE_QUIT_GAP(1); # if we ever get here, there was an error
