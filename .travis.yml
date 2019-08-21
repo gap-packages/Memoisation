@@ -8,6 +8,7 @@ env:
     - GAP_BOOTSTRAP=minimal
     - GAP_PKGS_TO_CLONE="json io crypting curlInterface profiling"
     - GAP_PKGS_TO_BUILD="json io crypting curlInterface profiling"
+    - GAP_TESTFILE=tst/testall.g  # to be explicit
 
 branches:
   except:
