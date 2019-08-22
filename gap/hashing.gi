@@ -28,6 +28,7 @@ end);
 InstallGlobalFunction(MEMO_Hash,
 function(key)
   local str, ints, sum, i;
+  IO_ClearPickleCache();  # In case IO_Pickle was recently interrupted
   str := IO_Pickle(key);  # Pickle the key to a string
   ints := SHA256String(str);  # Get the SHA-256 checksum in 32-bit chunks
   sum := 0;  # Bring all 256 bits together into a single integer

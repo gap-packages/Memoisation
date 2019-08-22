@@ -107,3 +107,29 @@ gap> msize(G);
 24
 gap> HasSize(G);
 true
+
+# Gabe's bug: IO_Pickle interruption (we clear the IO_Pickle cache manually)
+gap> SetInfoLevel(InfoMemoisation, 2);
+gap> triple := x -> x*3;;
+gap> mtriple := MemoisedFunction(triple);;
+gap> mtriple(5);;
+#I  Memo key: [ 5 ]
+#I  Key unknown.  Computing result...
+gap> mtriple(5);;
+#I  Memo key: [ 5 ]
+#I  Key known!  Loading result from cache...
+gap> id := G -> G;;
+gap> mid := MemoisedFunction(id);;
+gap> mid(FreeGroup(2));
+#I  Memo key: [ Group( [ f1, f2 ] ) ]
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error, no 1st choice method found for `IO_Pickle' on 2 arguments
+gap> mtriple(5);
+#I  Memo key: [ 5 ]
+#I  Key known!  Loading result from cache...
+15
+gap> mtriple(5);
+#I  Memo key: [ 5 ]
+#I  Key known!  Loading result from cache...
+15
+gap> SetInfoLevel(InfoMemoisation, 3);

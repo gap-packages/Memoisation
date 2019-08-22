@@ -86,6 +86,11 @@ InstallMethod(CallFuncList,
 function(memo, args)
   local key, val;
 
+  # In case IO_Pickle was recently interrupted
+  if memo!.pickle = IO_Pickle or memo!.unpickle = IO_Unpickle then
+    IO_ClearPickleCache();
+  fi;
+
   # Compute key
   key := CallFuncList(memo!.key, args);
   Info(InfoMemoisation, 2, "Memo key: ", key);
