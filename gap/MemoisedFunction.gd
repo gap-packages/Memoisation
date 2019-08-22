@@ -128,8 +128,9 @@ DeclareOperation("ClearMemoisedFunction", [IsMemoisedFunction]);
 #!     * 0 - No messages
 #!     * 1 - Problems only: messages describing what went wrong, with no
 #!           messages if an operation is successful
-#!     * 2 - Progress: also shows step-by-step progress of operations
-#!     * 3 - All: includes extra information such as attributes and backends
+#!     * 2 - Overview: also displays keys and the results of lookups
+#!     * 3 - Backend: also includes some information from the cache backend
+#!     * 4 - All: also includes underlying details such as filenames and URLs
 #!
 #!   Set this using, for example `SetInfoLevel(InfoMemoisation, 1)`.
 #!   Default value is 2.

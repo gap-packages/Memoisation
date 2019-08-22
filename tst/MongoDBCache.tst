@@ -13,16 +13,12 @@ gap> ClearMemoisedFunction(mq);
 true
 gap> mq(101);
 #I  Memo key: [ 101 ]
-#I  Querying localhost:5000/persist/quint/94TlBvHCAjh64_t67c127xiBiQLDhfwmbDiJoNq84lR?where={%22namespace%22=%22gapmemo%22}
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/quint
-#I  (including result, hash, namespace)
 505
 gap> mq(101);
 #I  Memo key: [ 101 ]
-#I  Querying localhost:5000/persist/quint/94TlBvHCAjh64_t67c127xiBiQLDhfwmbDiJoNq84lR?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/quint/94TlBvHCAjh64_t67c127xiBiQLDhfwmbDiJoNq84lR?where={%22namespace%22=%22gapmemo%22}
 505
 
 # unhash
@@ -36,21 +32,15 @@ gap> ClearMemoisedFunction(exp);
 true
 gap> exp(2);;
 #I  Memo key: 2.
-#I  Querying localhost:5000/persist/exp/e_to_the_2.?where={%22namespace%22=%22gapmemo%22}
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/exp
-#I  (including result, hash, namespace)
 gap> exp(2.0);;  # same key as last
 #I  Memo key: 2.
-#I  Querying localhost:5000/persist/exp/e_to_the_2.?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/exp/e_to_the_2.?where={%22namespace%22=%22gapmemo%22}
 gap> exp(-1);;
 #I  Memo key: -1.
-#I  Querying localhost:5000/persist/exp/e_to_the_-1.?where={%22namespace%22=%22gapmemo%22}
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/exp
-#I  (including result, hash, namespace)
 
 # unhash collision
 gap> square := MemoisedFunction(x -> x * x,
@@ -63,22 +53,16 @@ gap> ClearMemoisedFunction(square);
 true
 gap> square(16);
 #I  Memo key: 16
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/square
-#I  (including result, hash, namespace)
 256
 gap> square(16);
 #I  Memo key: 16
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 256
 gap> square(12);
 #I  Memo key: 12
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 Error, Hash collision: <key> does not match <storedkey>
 
 # storekey collision
@@ -92,23 +76,17 @@ gap> ClearMemoisedFunction(square);
 true
 gap> square(16);
 #I  Memo key: 16
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/square
-#I  (including result, hash, key, namespace)
 256
 gap> square(16);
 #I  Memo key: 16
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key matches that stored on the server
 256
 gap> square(12);
 #I  Memo key: 12
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/square/16?where={%22namespace%22=%22gapmemo%22}
 Error, Hash collision: <key> does not match <storedkey>
 
 # Metadata
@@ -124,20 +102,15 @@ gap> ClearMemoisedFunction(deg_to_rad);
 true
 gap> right_angle := deg_to_rad(90);;
 #I  Memo key: [ 90 ]
-#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
 #I  Key unknown.  Computing result...
 #I  Posting to localhost:5000/persist/deg_to_rad
-#I  (including result, hash, key, metadata, namespace)
 gap> right_angle := deg_to_rad(90);;
 #I  Memo key: [ 90 ]
-#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
 #I  Key known!  Loading result from cache...
-#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
 #I  Key matches that stored on the server
 gap> AbsoluteValue(right_angle - 3.14159 / 2) < 0.001;
 true
 gap> meta := MEMO_MongoDBQuery(deg_to_rad!.cache, [90]).metadata;;
-#I  Querying localhost:5000/persist/deg_to_rad/90?where={%22namespace%22=%22gapmemo%22}
 gap> StartsWith(meta, "Result cached at 1");  # fails in 2033
 true
 gap> Length(meta) = Length("Result cached at 1565877929");  # fails in 2286
@@ -147,7 +120,6 @@ true
 gap> ClearMemoisedFunction(deg_to_rad);
 true
 gap> LookupDictionary(deg_to_rad!.cache, [180]);
-#I  Querying localhost:5000/persist/deg_to_rad/180?where={%22namespace%22=%22gapmemo%22}
 #I  No entry found in database
 fail
 
@@ -160,11 +132,9 @@ gap> mq := MemoisedFunction(quint, rec(cache := "mongodb://localhost:5000/persis
 <memoised function( x ) ... end>
 gap> AddDictionary(mq!.cache, 3, 15);
 #I  Posting to localhost:5000/persist/quint
-#I  (including result, hash, namespace)
 Error, AddDictionary (MongoDB cache): Failed to connect to localhost port 5000: Connection refused
 gap> ClearMemoisedFunction(mq);
 Error, MongoDB cache: failed to clear
 gap> mq(10);
 #I  Memo key: [ 10 ]
-#I  Querying localhost:5000/persist/quint/CZCaIiskta1Wl_P-BCbYX4URqHmX1m-OS6ocAVgK5Lk?where={%22namespace%22=%22gapmemo%22}
 Error, MongoDB cache: Failed to connect to localhost port 5000: Connection refused

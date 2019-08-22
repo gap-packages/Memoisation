@@ -109,9 +109,8 @@ function(cache, key)
 
   # Load result
   str := StringFile(filename);
-  Info(InfoMemoisation, 3, "Got ", Length(str), " bytes from file");
+  Info(InfoMemoisation, 4, "Got ", Length(str), " bytes from file");
   val := memo!.unpickle(str);
-  Info(InfoMemoisation, 3, "Got cached result from file");
 
   return val;
 end);

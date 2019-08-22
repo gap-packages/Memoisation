@@ -50,7 +50,7 @@ function(cache, key, val)
   post_string := JoinStringsWithSeparator(args, "&");
   url := cache!.url;
   Info(InfoMemoisation, 3, "Posting to ", url);
-  Info(InfoMemoisation, 3, "(including ",
+  Info(InfoMemoisation, 4, "(including ",
        JoinStringsWithSeparator(RecNames(query), ", "), ")");
   db_response := PostToURL(cache!.url, post_string);
   if db_response.success = false then
@@ -145,7 +145,7 @@ function(cache, key)
   query := JoinStringsWithSeparator(query, ",");
   url := Concatenation(cache!.url, "/", memo!.hash(key),
                        "?where={", query, "}");
-  Info(InfoMemoisation, 3, "Querying ", url);
+  Info(InfoMemoisation, 4, "Querying ", url);
   db_response := DownloadURL(url);
   if db_response.success = false then
     # No valid response from server

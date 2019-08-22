@@ -81,8 +81,6 @@ gap> exp(2.0);;  # same key as last
 #I  Memo key: 2.
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/exp/e_to_the_2..out
-#I  Got 25 bytes from file
-#I  Got cached result from file
 gap> exp(-1);;
 #I  Memo key: -1.
 #I  Key unknown.  Computing result...
@@ -105,8 +103,6 @@ gap> square(16);
 #I  Memo key: 16
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/square/16.out
-#I  Got 9 bytes from file
-#I  Got cached result from file
 256
 gap> square(12);
 #I  Memo key: 12
@@ -132,8 +128,6 @@ gap> cube(16);
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/cube/16.out
 #I  Key matches MEMODIR/cube/16.key
-#I  Got 10 bytes from file
-#I  Got cached result from file
 4096
 gap> cube(12);
 #I  Memo key: 12

@@ -16,8 +16,6 @@ gap> mdoub(13);
 #I  Memo key: [ 13 ]
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/double/7kBFu8v1BAsv2OKlKbOnFXy9uXmNp8dSvgNKPKlAwmn.out
-#I  Got 8 bytes from file
-#I  Got cached result from file
 26
 gap> Print(mdoub, "\n");
 MemoisedFunction(
@@ -52,8 +50,6 @@ gap> mtriple(5);
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/triple_any_number/5.out
 #I  Key matches MEMODIR/triple_any_number/5.key
-#I  Got 7 bytes from file
-#I  Got cached result from file
 15
 
 # MemoisedFunction: bad input
@@ -101,23 +97,22 @@ gap> msize(G);
 #I  Memo key: [ (1,2,3,4), (1,2) ]
 #I  Key known!  Loading result from cache...
 #I  Using filename MEMODIR/Size/257eVavHQZrY_KWD3b2pNr14QtWH17Gd4wlUYpYUvrV.out
-#I  Got 8 bytes from file
-#I  Got cached result from file
-#I  Setting attribute Size
 24
 gap> HasSize(G);
 true
 
 # Gabe's bug: IO_Pickle interruption (we clear the IO_Pickle cache manually)
-gap> SetInfoLevel(InfoMemoisation, 2);
 gap> triple := x -> x*3;;
 gap> mtriple := MemoisedFunction(triple);;
 gap> mtriple(5);;
 #I  Memo key: [ 5 ]
 #I  Key unknown.  Computing result...
+#I  Using filename MEMODIR/triple/ALiKMHk80ySiQOgUZYZrCquI3WcTIC-rCIYshZHEnbH.out
+#I  Result stored in file
 gap> mtriple(5);;
 #I  Memo key: [ 5 ]
 #I  Key known!  Loading result from cache...
+#I  Using filename MEMODIR/triple/ALiKMHk80ySiQOgUZYZrCquI3WcTIC-rCIYshZHEnbH.out
 gap> id := G -> G;;
 gap> mid := MemoisedFunction(id);;
 gap> mid(FreeGroup(2));
@@ -127,9 +122,10 @@ Error, no 1st choice method found for `IO_Pickle' on 2 arguments
 gap> mtriple(5);
 #I  Memo key: [ 5 ]
 #I  Key known!  Loading result from cache...
+#I  Using filename MEMODIR/triple/ALiKMHk80ySiQOgUZYZrCquI3WcTIC-rCIYshZHEnbH.out
 15
 gap> mtriple(5);
 #I  Memo key: [ 5 ]
 #I  Key known!  Loading result from cache...
+#I  Using filename MEMODIR/triple/ALiKMHk80ySiQOgUZYZrCquI3WcTIC-rCIYshZHEnbH.out
 15
-gap> SetInfoLevel(InfoMemoisation, 3);

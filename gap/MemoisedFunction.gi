@@ -111,7 +111,7 @@ function(memo, args)
   if Size(args) = 1 and
      (IsAttribute(memo!.func) or IsProperty(memo!.func)) and
      not Tester(memo!.func)(args[1]) then
-    Info(InfoMemoisation, 3, "Setting attribute ", NameFunction(memo!.func));
+    Info(InfoMemoisation, 4, "Setting attribute ", NameFunction(memo!.func));
     Setter(memo!.func)(args[1], val);
   fi;
 
