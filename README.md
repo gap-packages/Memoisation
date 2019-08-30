@@ -65,6 +65,17 @@ the terms of the BSD 3-clause license.
 
 For details see the files COPYRIGHT.md and LICENSE.
 
+Citing
+------
+Please cite this package as:
+
+[TP19]
+M. Torpey & M. Pfeiffer,
+Memoisation (GAP package),
+Persistent memoisation in GAP,
+Version X.Y (20XX),
+https://github.com/gap-packages/Memoisation.
+
 Acknowledgement
 ---------------
 
