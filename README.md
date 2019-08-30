@@ -3,6 +3,7 @@ The GAP 4 package `Memoisation'
 
 [![Build Status](https://travis-ci.org/gap-packages/Memoisation.svg?branch=master)](https://travis-ci.org/gap-packages/Memoisation)
 [![Code Coverage](https://codecov.io/github/gap-packages/Memoisation/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/Memoisation)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gap-packages/Memoisation/master?filepath=notebooks/PackageManager-demo.ipynb)
 
 A persistent memoisation framework for the GAP computational algebra system.
 Persistent memoisation is the practice of storing the output of a function
