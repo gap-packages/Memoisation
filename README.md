@@ -3,6 +3,7 @@ The GAP 4 package `Memoisation'
 
 [![Build Status](https://travis-ci.org/gap-packages/Memoisation.svg?branch=master)](https://travis-ci.org/gap-packages/Memoisation)
 [![Code Coverage](https://codecov.io/github/gap-packages/Memoisation/coverage.svg?branch=master&token=)](https://codecov.io/gh/gap-packages/Memoisation)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/gap-packages/Memoisation/master?filepath=demo.ipynb)
 
 A persistent memoisation framework for the GAP computational algebra system.
 Persistent memoisation is the practice of storing the output of a function
@@ -65,8 +66,24 @@ the terms of the BSD 3-clause license.
 
 For details see the files COPYRIGHT.md and LICENSE.
 
+Citing
+------
+Please cite this package as:
+
+[TP20]
+M. Torpey & M. Pfeiffer,
+Memoisation (GAP package),
+Persistent memoisation in GAP,
+Version X.Y (20XX),
+https://github.com/gap-packages/Memoisation.
+
 Acknowledgement
 ---------------
+
+Memoisation was created as part of the OpenDreamKit project: 
+https://opendreamkit.org/
+
+This part of the project is summarised in [this report](https://github.com/OpenDreamKit/OpenDreamKit/blob/master/WP6/D6.9/report-final.pdf).
 
 <table class="none">
 <tr>
