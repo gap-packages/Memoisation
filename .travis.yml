@@ -3,8 +3,6 @@ services:
   - mongodb  # this might not launch fast enough - we could need a delay
 env:
   global:
-    - GAP_BOOTSTRAP=minimal
-    - GAP_PKGS_TO_CLONE="io json crypting curlInterface"
     - GAP_PKGS_TO_BUILD="io profiling json crypting curlInterface"
     - GAP_TESTFILE=tst/testall.g  # to be explicit
 
