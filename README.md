@@ -70,7 +70,7 @@ Citing
 ------
 Please cite this package as:
 
-[TP19]
+[TP20]
 M. Torpey & M. Pfeiffer,
 Memoisation (GAP package),
 Persistent memoisation in GAP,

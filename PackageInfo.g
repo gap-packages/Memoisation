@@ -10,8 +10,8 @@ SetPackageInfo( rec(
 
 PackageName := "Memoisation",
 Subtitle := "Shared persistent memoisation library for GAP and other systems",
-Version := "0.8",
-Date := "20/08/2019", # dd/mm/yyyy format
+Version := "1.0",
+Date := "23/01/2020", # dd/mm/yyyy format
 License := "BSD-3-Clause",
 
 Persons := [
